@@ -1,0 +1,9 @@
+version: '3.4'
+
+services:
+  db:
+    image: postgres:11.2-alpine
+    environment:
+      POSGRESS_DB: statcan_api
+    volumes:
+      - ./db/:/docker-entrypoint-initdb.d/
