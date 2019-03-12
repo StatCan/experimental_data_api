@@ -6,8 +6,9 @@ CREATE VIEW vObservations AS
     GROUP BY observation_id, id
   )
   SELECT
-    o.id, i.name AS indicator, value, dateModified
+    o.id, i.name AS indicator, value, dateModified, dimensions
   FROM observations o
   INNER JOIN last_value lv ON o.id = lv.observation_id
   INNER JOIN observation_values v ON v.id = lv.value_id
-  INNER JOIN indicators i ON o.indicator_id = i.id;
+  INNER JOIN indicators i ON o.indicator_id = i.id
+  INNER JOIN observation_dimensions d ON o.id = d.observation_id;
