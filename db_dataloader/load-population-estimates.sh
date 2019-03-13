@@ -49,7 +49,7 @@ run_query () {
     END; $$;"\
   }'
 
-  awk "$template" $file | psql -h "$PGHOST" -d "$POSTGRES_DB" -U postgres
+  awk "$template" $file | psql
 }
 
 cube=17100009
