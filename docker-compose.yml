@@ -4,6 +4,20 @@ services:
   db:
     image: postgres:11.2-alpine
     environment:
-      POSGRESS_DB: statcan_api
+      POSTGRES_DB: statcan_api
+    ports:
+      - '5432:5432'
     volumes:
       - ./db/:/docker-entrypoint-initdb.d/
+  db_dataloader:
+    image: postgres:11.2-alpine
+    environment:
+      POSTGRES_DB: statcan_api
+      PGHOST: db
+    depends_on:
+      - db
+    volumes:
+      - ./db_dataloader/:/init
+    working_dir: /init
+    entrypoint: ''
+    command: ['./wait-for.sh', './load-data.sh']
