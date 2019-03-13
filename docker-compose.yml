@@ -9,6 +9,7 @@ services:
       - '5432:5432'
     volumes:
       - ./db/:/docker-entrypoint-initdb.d/
+      - db-data:/var/lib/postgresql/data
   db_dataloader:
     image: postgres:11.2-alpine
     environment:
@@ -21,3 +22,6 @@ services:
     working_dir: /init
     entrypoint: ''
     command: ['./wait-for.sh', './load-data.sh']
+
+volumes:
+  db-data:
