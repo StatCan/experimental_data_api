@@ -1,9 +1,11 @@
 #!/bin/sh
 
+
+
 run_query () {
   file=$1;
   template='BEGIN { FS="," }\
-  { gsub(/"/, "", $1) gsub(/"/, "", $2) gsub(/"/, "", $8) gsub(/v/, "", $8) gsub(/"/, "", $10) }; \
+  { gsub(/"/, "", $1) gsub(/"/, "", $2) gsub(/"/, "", $4) gsub(/s$/, "", $4) gsub(/"/, "", $9) gsub(/v/, "", $9) gsub(/"/, "", $11) }; \
   { gsub(/Canada/, "01", $2) } \
   { gsub(/Newfoundland and Labrador/, "10", $2) } \
   { gsub(/Prince Edward Island/, "11", $2) } \
@@ -19,13 +21,14 @@ run_query () {
   { gsub(/Northwest Territories including Nunavut/, "61", $2) } \
   { gsub(/Northwest Territories/, "61", $2) } \
   { gsub(/Nunavut/, "62", $2) } \
-  NR > 2 { print "\
+  /Marriage/ {print ""} \
+  !/Marriage/ && NR > 2 { print "\
     DO $$ \
     DECLARE \
       indicator_id_val integer; \
       observation_id_val integer; \
     BEGIN \
-      SELECT id INTO indicator_id_val FROM indicators WHERE name = \x27population\x27; \
+      SELECT id INTO indicator_id_val FROM indicators WHERE name = \x27"tolower($4)"\x27; \
       \
       INSERT INTO observations (id, indicator_id) \
       VALUES(DEFAULT, indicator_id_val) \
@@ -38,11 +41,11 @@ run_query () {
       VALUES(observation_id_val, \x27"$2"\x27); \
       \
       INSERT INTO observation_values (observation_id, date, value) \
-      VALUES(observation_id_val, NOW(), "$10"); \
+      VALUES(observation_id_val, NOW(), "$11"); \
       \
-      IF NOT EXISTS (SELECT * FROM vectors WHERE id = "$8") THEN \
+      IF NOT EXISTS (SELECT * FROM vectors WHERE id = "$9") THEN \
         INSERT INTO vectors (id, indicator_id, dimensions) \
-        VALUES ("$8", indicator_id_val, ( \
+        VALUES ("$9", indicator_id_val, ( \
           SELECT dimensions FROM observation_dimensions WHERE observation_id = observation_id_val) - \x27period\x27::text \
         ); \
       END IF; \
@@ -52,7 +55,7 @@ run_query () {
   awk "$template" $file | psql -h "$PGHOST" -d "$POSTGRES_DB" -U postgres
 }
 
-cube=17100009
+cube=17100059
 
 wget -nc https://www150.statcan.gc.ca/n1/tbl/csv/${cube}-eng.zip \
   && unzip ${cube}-eng.zip ${cube}.csv \
