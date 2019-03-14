@@ -11,7 +11,7 @@ CREATE VIEW vIndicators AS
     GROUP BY indicator_id
   )
   SELECT
-    i.name, i.sdmx_id, i.title::jsonb, f.name AS frequency, dimensions, m.dateModified
+    i.name as id, i.sdmx_id, i.title::jsonb, f.name AS frequency, dimensions, m.dateModified
   FROM indicators i
   INNER JOIN frequencies f ON i.frequency_id = f.id
   INNER JOIN dimensions d ON d.indicator_id = i.id
