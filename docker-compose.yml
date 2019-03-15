@@ -30,6 +30,18 @@ services:
     working_dir: /init
     entrypoint: ''
     command: ['./wait-for.sh', './load-data.sh']
+  api:
+    build:
+      context: ./api
+      args:
+        NODE_ENV: production
+    depends_on:
+      - db
+    environment:
+      << : *env
+      URL_ROOT: http://localhost:8000
+    ports:
+      - '8000:8000'
 
 volumes:
   db-data:

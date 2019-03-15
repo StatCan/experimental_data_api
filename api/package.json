@@ -1,0 +1,29 @@
+{
+  "name": "statcan_api",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "npm run-script test-lint && npm run-script test-unit",
+    "test-lint": "npx eslint --ext .js api/ test/",
+    "test-unit": "npx mocha test/ --require test/_mocha_clifix.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=8.3.0"
+  },
+  "dependencies": {
+    "express-api-server": "git+https://github.com/Statcan/express-api-server.git",
+    "jsonapi-pagination": "git+https://gitlab.k8s.cloud.statcan.ca/laurent.goderre/jsonapi-pagination.git",
+    "pg": "^7.8.2"
+  },
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-config-google": "^0.9.1",
+    "eslint-plugin-node": "^7.0.1",
+    "mocha": "^5.2.0",
+    "request": "^2.88.0"
+  }
+}
