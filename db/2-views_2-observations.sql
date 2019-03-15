@@ -6,7 +6,7 @@ CREATE VIEW vObservations AS
     GROUP BY observation_id, id
   )
   SELECT
-    o.id, i.name AS indicator, value, dateModified, dimensions
+    o.id, i.name AS indicator, dimensions::jsonb, value, dateModified
   FROM observations o
   INNER JOIN last_value lv ON o.id = lv.observation_id
   INNER JOIN observation_values v ON v.id = lv.value_id
