@@ -1,7 +1,4 @@
 #!/bin/sh
-
-
-
 run_query () {
   file=$1;
   template='BEGIN { FS="," }\
@@ -30,12 +27,9 @@ run_query () {
     BEGIN \
       SELECT id INTO indicator_id_val FROM indicators WHERE name = \x27"tolower($4)"\x27; \
       \
-      INSERT INTO observations (id, indicator_id) \
-      VALUES(DEFAULT, indicator_id_val) \
+      INSERT INTO observations (id, indicator_id, period) \
+      VALUES(DEFAULT, indicator_id_val, TO_DATE(\x27"$1"-01\x27, \x27YYYY-MM-DD\x27)) \
       RETURNING id INTO observation_id_val; \
-      \
-      INSERT INTO observation_dimension_period (observation_id, value) \
-      VALUES(observation_id_val, TO_DATE(\x27"$1"-01\x27, \x27YYYY-MM-DD\x27)); \
       \
       INSERT INTO observation_dimension_geographicArea (observation_id, value) \
       VALUES(observation_id_val, \x27"$2"\x27); \

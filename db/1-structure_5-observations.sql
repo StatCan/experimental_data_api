@@ -1,6 +1,7 @@
 CREATE TABLE observations (
   id serial PRIMARY KEY,
-  indicator_id integer REFERENCES indicators(id)
+  indicator_id integer REFERENCES indicators(id),
+  period date
 );
 
 CREATE TABLE observation_values (
@@ -29,15 +30,6 @@ CREATE OR REPLACE FUNCTION add_dimension() RETURNS TRIGGER AS $$
 
     RETURN NEW;
   END; $$ LANGUAGE plpgsql;
-
-CREATE TABLE observation_dimension_period (
-  id serial PRIMARY KEY,
-  observation_id integer REFERENCES observations(id),
-  value date
-);
-
-CREATE TRIGGER dimension_period_trigger AFTER INSERT ON observation_dimension_period
-  FOR EACH ROW EXECUTE PROCEDURE add_dimension("period");
 
 CREATE TABLE observation_dimension_geographicArea (
   id serial PRIMARY KEY,

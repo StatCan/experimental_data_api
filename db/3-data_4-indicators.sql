@@ -28,7 +28,7 @@ DECLARE
 BEGIN
 FOREACH ind IN ARRAY ARRAY['population', 'birth', 'death', 'immigration', 'emigration']
 LOOP
-  FOREACH dim IN ARRAY ARRAY['period', 'geographicArea']
+  FOREACH dim IN ARRAY ARRAY['geographicArea']
   LOOP
     INSERT INTO indicator_dimensions (indicator_id, dimension_id)
     VALUES (
