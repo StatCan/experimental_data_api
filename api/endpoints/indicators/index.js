@@ -2,6 +2,7 @@ const indicators = require('./model');
 const pagination = require('jsonapi-pagination');
 const {RequestError} = require('express-api-server');
 const paginationHelper = require('../../helpers/pagination');
+const {parsePeriod} = require('../../helpers/parsers');
 
 async function validateIndicatorId(req, res, next) {
 	if (!indicators.isValid(req.params.indicator_id))
@@ -47,6 +48,15 @@ module.exports = {
 				const options = {};
 				let pages = pagination(req);
 				let {start, count} = pages.limits;
+
+				if (req.query.period) {
+					try {
+						options.period = parsePeriod(req.query.period);
+					} catch (e) {
+						return next(new RequestError(req, 400, e.message));
+					}
+				}
+
 				let {length, list} = await indicators.listObservations(req.params.indicator_id, start, count, urlResolver, options).catch(next);
 				let links = paginationHelper.getLinks(pages, length, urlResolver);
 

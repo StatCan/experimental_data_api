@@ -6,16 +6,42 @@ const countQuery = 'SELECT COUNT(*) FROM "vObservations"';
 const existQuery = 'SELECT COUNT(*) FROM  "vObservations" WHERE id = $1';
 const getQuery = 'SELECT * FROM "vObservations" WHERE id = $1 LIMIT 1';
 
+const dateFormat = {
+	year: 'numeric',
+	month: '2-digit',
+	day: '2-digit'
+};
+
 const observationIdValidation = /^\d*$/;
 
 function getFilters(options) {
-	let filter = '';
+	let filter = [];
 
 	if (options.indicator) {
-		filter += ` indicator = '${options.indicator}'`;
+		filter.push(`indicator = '${options.indicator}'`);
 	}
 
-	return filter ? ` WHERE ${filter}` : '';
+	if (options.period) {
+		let start;
+		let end;
+		if (options.period.start && options.period.end && options.period.start > options.period.end) {
+			start = options.period.end;
+			end = options.period.start;
+		} else {
+			start = options.period.start;
+			end = options.period.end;
+		}
+
+		if (start) {
+			filter.push(`period >= '${start.toLocaleDateString(undefined, dateFormat)}'`);
+		}
+
+		if (end) {
+			filter.push(`period <= '${end.toLocaleDateString(undefined, dateFormat)}'`);
+		}
+	}
+
+	return filter.length > 0 ? ` WHERE ${filter.join(' AND ')}` : '';
 }
 
 function format(observation, urlResolver) {
@@ -29,22 +55,19 @@ function format(observation, urlResolver) {
 			notes: urlResolver.resolve(`${self}/notes`)
 		}
 	};
-	newObject.period = newObject.period.toLocaleDateString(undefined, {
-		year: 'numeric',
-		month: '2-digit',
-		day: '2-digit'
-	});
+	newObject.period = newObject.period.toLocaleDateString(undefined, dateFormat);
 	return jsonapiHelper.format(newObject);
 }
 
 module.exports = {
 	list: async function(start, count, urlResolver, options={}) {
 		const client = new Client();
+		const filters = getFilters(options);
 		return new Promise(async (resolve, reject) => {
 			await client.connect().catch(reject);
 			const [res, countRes] = await Promise.all([
-				client.query(listQuery[0] + getFilters(options) + listQuery[1], [count, start]),
-				client.query(countQuery + getFilters(options))
+				client.query(listQuery[0] + filters + listQuery[1], [count, start]),
+				client.query(countQuery + filters)
 			]).catch(reject);
 			client.end();
 			resolve({

@@ -3,6 +3,7 @@ const indicators = require('../indicators/model');
 const pagination = require('jsonapi-pagination');
 const {RequestError} = require('express-api-server');
 const paginationHelper = require('../../helpers/pagination');
+const {parsePeriod} = require('../../helpers/parsers');
 
 async function validateObservationId(req, res, next) {
 	if (!observations.isValid(req.params.observation_id))
@@ -28,6 +29,14 @@ module.exports = {
 						return next(new RequestError(req, 400, 'Invalid indicator id'));
 
 					options.indicator = req.query.indicator;
+				}
+
+				if (req.query.period) {
+					try {
+						options.period = parsePeriod(req.query.period);
+					} catch (e) {
+						return next(new RequestError(req, 400, e.message));
+					}
 				}
 
 				let {length, list} = await observations.list(start, count, urlResolver, options).catch(next);
