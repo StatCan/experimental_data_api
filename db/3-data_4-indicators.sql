@@ -5,20 +5,20 @@ VALUES
   hstore(ARRAY[['en', 'Population Estimates'], ['fr', '']])
 ),
 (
-  'birth', 'DEM_LVB', (SELECT id FROM frequencies WHERE name = 'quarterly'),
-  hstore(ARRAY[['en', 'Birth'], ['fr', 'Naissances']])
+  'births', 'DEM_LVB', (SELECT id FROM frequencies WHERE name = 'quarterly'),
+  hstore(ARRAY[['en', 'Births'], ['fr', 'Naissances']])
 ),
 (
-  'death', 'DEM_DTH', (SELECT id FROM frequencies WHERE name = 'quarterly'),
+  'deaths', 'DEM_DTH', (SELECT id FROM frequencies WHERE name = 'quarterly'),
   hstore(ARRAY[['en', 'Deaths'], ['fr', 'Décès']])
 ),
 (
-  'immigration', 'DEM_IMM', (SELECT id FROM frequencies WHERE name = 'quarterly'),
-  hstore(ARRAY[['en', 'Immigration'], ['fr', 'Immigration']])
+  'immigrants', 'DEM_IMM', (SELECT id FROM frequencies WHERE name = 'quarterly'),
+  hstore(ARRAY[['en', 'Immigrants'], ['fr', 'Immigrants']])
 ),
 (
-  'emigration', 'DEM_EMI', (SELECT id FROM frequencies WHERE name = 'quarterly'),
-  hstore(ARRAY[['en', 'Emigration'], ['fr', 'Émigration']])
+  'emigrants', 'DEM_EMI', (SELECT id FROM frequencies WHERE name = 'quarterly'),
+  hstore(ARRAY[['en', 'Emigrants'], ['fr', 'Émigrants']])
 );
 
 DO $$
@@ -26,7 +26,7 @@ DECLARE
   ind varchar;
   dim varchar;
 BEGIN
-FOREACH ind IN ARRAY ARRAY['population', 'birth', 'death', 'immigration', 'emigration']
+FOREACH ind IN ARRAY ARRAY['population', 'births', 'deaths', 'immigrants', 'emigrants']
 LOOP
   FOREACH dim IN ARRAY ARRAY['geographicArea']
   LOOP

@@ -2,7 +2,7 @@
 run_query () {
   file=$1;
   template='BEGIN { FS="," }\
-  { gsub(/"/, "", $1) gsub(/"/, "", $2) gsub(/"/, "", $4) gsub(/s$/, "", $4) gsub(/"/, "", $9) gsub(/v/, "", $9) gsub(/"/, "", $11) }; \
+  { gsub(/"/, "", $1) gsub(/"/, "", $2) gsub(/"/, "", $4) gsub(/"/, "", $9) gsub(/v/, "", $9) gsub(/"/, "", $11) }; \
   { gsub(/Canada/, "01", $2) } \
   { gsub(/Newfoundland and Labrador/, "10", $2) } \
   { gsub(/Prince Edward Island/, "11", $2) } \
