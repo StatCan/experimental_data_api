@@ -41,6 +41,12 @@ function getFilters(options) {
 		}
 	}
 
+	if (options.dimensions) {
+		for (const [key, values] of Object.entries(options.dimensions)) {
+			filter.push(`dimensions ->> '${key}' IN ('${values.join('\',\'')}')`);
+		}
+	}
+
 	return filter.length > 0 ? ` WHERE ${filter.join(' AND ')}` : '';
 }
 

@@ -2,7 +2,7 @@ const indicators = require('./model');
 const pagination = require('jsonapi-pagination');
 const {RequestError} = require('express-api-server');
 const paginationHelper = require('../../helpers/pagination');
-const {parsePeriod} = require('../../helpers/parsers');
+const {parsePeriod, parseDimensions} = require('../../helpers/parsers');
 
 async function validateIndicatorId(req, res, next) {
 	if (!indicators.isValid(req.params.indicator_id))
@@ -52,6 +52,14 @@ module.exports = {
 				if (req.query.period) {
 					try {
 						options.period = parsePeriod(req.query.period);
+					} catch (e) {
+						return next(new RequestError(req, 400, e.message));
+					}
+				}
+
+				if (req.query.dimensions) {
+					try {
+						options.dimensions = parseDimensions(req.query.dimensions);
 					} catch (e) {
 						return next(new RequestError(req, 400, e.message));
 					}

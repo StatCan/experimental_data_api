@@ -44,3 +44,45 @@ module.exports.parsePeriod = function(period) {
 
 	return rtn;
 };
+
+module.exports.parseDimensions = function(dimensions) {
+	const noObjectTest = (v) => {
+		if (typeof v === 'object' && !Array.isArray(v))
+			throw new Error(`Nested dimensions values are not supported: ${JSON.stringify(v)}`);
+	};
+
+	const validateValue = (v) => {
+		if (!dimensionsValueRegexp.test(v))
+			throw new Error(`Invalid dimension value: '${v}'`);
+	};
+
+	for (let [key, value] of Object.entries(dimensions)) {
+		if (!dimensionNameRegExp.test(key))
+			throw new Error(`Invalid dimensions name ${key}`);
+
+
+		if (typeof value === 'string') {
+			value = dimensions[key] = value.split(',');
+		}
+
+		noObjectTest(value);
+
+		if (Array.isArray(value)) {
+			value.forEach((v, i, arr) => {
+				noObjectTest(v);
+				if (typeof v === 'string') {
+					const split = v.split(',');
+					if (split.length > 1) {
+						split.forEach(validateValue);
+						arr.splice(i, 1);
+						arr.push(...split);
+					} else {
+						validateValue(v);
+					}
+				}
+			});
+		}
+	}
+
+	return dimensions;
+};
