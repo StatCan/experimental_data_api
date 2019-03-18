@@ -1,10 +1,67 @@
-const {APIError} = require('express-api-server');
+const vectors = require('./model');
+const pagination = require('jsonapi-pagination');
+const {RequestError} = require('express-api-server');
+const paginationHelper = require('../../helpers/pagination');
+
+async function validateVectorId(req, res, next) {
+	if (!vectors.isValid(req.params.vector_id))
+		return next(new RequestError(req, 400, 'Invalid indicator id'));
+
+	if (!await vectors.exists(req.params.vector_id).catch(next))
+		return next(new RequestError(req, 404, `Indicator '${req.params.vector_id}' not found`));
+
+	next();
+}
 
 module.exports = {
 	'/': (route, urlResolver) => {
 		route
 			.get(async (req, res, next) => {
-				return next(new APIError(req, 501, 'Not implemented.....yet'));
+				res.locals.json = {
+					id: 'vectors',
+					type: 'legacyEndpoint',
+					links: {
+						self: urlResolver.resolve('/legacy/vectors')
+					}
+				};
+				next();
 			});
-	}
+	},
+
+	'/vectors': (route, urlResolver) => {
+		route
+			.get(async (req, res, next) => {
+				let pages = pagination(req);
+				let {start, count} = pages.limits;
+				let {length, list} = await vectors.list(start, count, urlResolver).catch(next);
+				let links = paginationHelper.getLinks(pages, length, urlResolver);
+
+				res.locals.json = {
+					links,
+					data: list
+				};
+				next();
+			});
+	},
+	'/vectors/:vector_id': (route, urlResolver) => {
+		route
+			.get(validateVectorId)
+			.get(async (req, res, next) => {
+				const vector = await vectors.get(req.params.vector_id, urlResolver).catch(next);
+				const query = [];
+
+				for (const [key, value] of Object.entries(vector.attributes.dimensions)) {
+					query.push(`dimensions[${key}]=${value}`);
+				}
+
+				const [, originalQuery] = req.originalUrl.split('?');
+
+				if (originalQuery) {
+					query.push(originalQuery);
+				}
+
+				let url = `/indicators/${vector.attributes.indicator}/observations?${query.join('&')}`;
+				res.redirect(url);
+			});
+	},
 };
