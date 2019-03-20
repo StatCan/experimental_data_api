@@ -46,12 +46,12 @@ run_query () {
     END; $$;"\
   }'
 
-  awk "$template" $file | psql
+  awk "$template" $file >> $file.sql && cat $file.sql | psql -q && rm $file.sql
 }
 
 cube=17100040
 
 wget -nc https://www150.statcan.gc.ca/n1/tbl/csv/${cube}-eng.zip \
-  && unzip ${cube}-eng.zip ${cube}.csv \
+  && unzip -q ${cube}-eng.zip ${cube}.csv \
   && run_query "${cube}.csv" \
   && rm ${cube}-eng.zip ${cube}.csv
