@@ -1,4 +1,4 @@
-CREATE VIEW vVectors AS
+CREATE VIEW "vVectors" AS
 SELECT
   v.id, i.name AS indicator, dimensions::jsonb
 FROM vectors v

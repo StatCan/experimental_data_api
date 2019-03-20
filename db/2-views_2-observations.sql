@@ -1,4 +1,4 @@
-CREATE VIEW vObservations AS
+CREATE VIEW "vObservations" AS
   WITH last_value AS (
     SELECT
       id as value_id, observation_id, MAX(date) as dateModified

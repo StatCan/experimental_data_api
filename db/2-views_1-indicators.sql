@@ -1,4 +1,4 @@
-CREATE VIEW vIndicators AS
+CREATE VIEW "vIndicators" AS
   WITH last_modified AS (
     SELECT indicator_id, MAX(date) AS dateModified
     FROM observations o
