@@ -1,5 +1,6 @@
 const {Client} = require('pg');
 const jsonapiHelper = require('../../helpers/jsonapi');
+const jsonStat = require('../../helpers/json-stat');
 const observations = require('../observations/model');
 
 const listQuery = 'SELECT * FROM "vIndicators" ORDER BY "dateModified" LIMIT $1 OFFSET $2';
@@ -16,7 +17,8 @@ function format(indicator, urlResolver) {
 		...indicator,
 		links: {
 			self,
-			observations: urlResolver.resolve(`${self}/observations`)
+			'json-stat': `${self}/json-stat`,
+			'observations': `${self}/observations`
 		}
 	});
 }
@@ -62,5 +64,15 @@ module.exports = {
 	},
 	listObservations: async function(id, start, count, urlResolver, options) {
 		return observations.list(start, count, urlResolver, {indicator: id, ...options});
+	},
+	getJsonStat: async function(id, urlResolver, options) {
+		return new Promise(async (resolve, reject) => {
+			let [indicator, {list}] = await Promise.all([
+				this.get(id, urlResolver),
+				observations.list(0, null, urlResolver, {indicator: id})
+			]).catch(reject);
+
+			resolve(jsonStat.convert(id, indicator, list));
+		});
 	}
 };

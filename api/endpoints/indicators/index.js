@@ -74,5 +74,14 @@ module.exports = {
 				};
 				next();
 			});
+	},
+	'/:indicator_id/json-stat': (route, urlResolver) => {
+		route
+			.get(validateIndicatorId)
+			.get(async (req, res, next) => {
+				const jsonStat = await indicators.getJsonStat(req.params.indicator_id, urlResolver, {url: req.path}).catch(next);
+				res.locals.json = jsonStat;
+				next();
+			});
 	}
 };
