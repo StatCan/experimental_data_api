@@ -8,7 +8,7 @@ CREATE TABLE observation_values (
   id serial PRIMARY KEY,
   observation_id integer REFERENCES observations(id),
   date timestamp,
-  value decimal
+  value real
 );
 
 CREATE TABLE observation_dimensions (
