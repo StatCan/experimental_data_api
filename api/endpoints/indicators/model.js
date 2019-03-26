@@ -1,12 +1,14 @@
 const {Client} = require('pg');
 const jsonapiHelper = require('../../helpers/jsonapi');
 const jsonStat = require('../../helpers/json-stat');
+const sdmx = require('../../helpers/sdmx');
 const observations = require('../observations/model');
 
 const listQuery = 'SELECT * FROM "vIndicators" ORDER BY "dateModified" LIMIT $1 OFFSET $2';
 const countQuery = 'SELECT COUNT(*) FROM "vIndicators"';
 const existQuery = 'SELECT COUNT(*) FROM  "vIndicators" WHERE id = $1';
 const getQuery = 'SELECT * FROM "vIndicators" WHERE id = $1 LIMIT 1';
+const getStatus = 'SELECT json_object(keys, values) status FROM (SELECT ARRAY_AGG(name) keys, ARRAY_AGG(symbol) "values" FROM status) s;'
 
 const indicatorIdValidation = /^[aA-zZ1-9_-]*$/;
 
@@ -18,6 +20,7 @@ function format(indicator, urlResolver) {
 		links: {
 			self,
 			'json-stat': `${self}/json-stat`,
+			'sdmx': `${self}/sdmx`,
 			'observations': `${self}/observations`
 		}
 	});
@@ -73,6 +76,23 @@ module.exports = {
 			]).catch(reject);
 
 			resolve(jsonStat.convert(id, indicator, list));
+		});
+	},
+	getSDMX: async function(id, urlResolver, options) {
+		const client = new Client();
+		return new Promise(async (resolve, reject) => {
+			let [indicator, {list}, status] = await Promise.all([
+				this.get(id, urlResolver),
+				observations.list(0, null, urlResolver, {indicator: id}),
+				new Promise(async (resolve, reject) => {
+					await client.connect().catch(reject);
+					const res = await client.query(getStatus).catch(reject);
+					client.end();
+					resolve(res.rows[0].status);
+				})
+			]).catch(reject);
+
+			resolve(sdmx.convert(id, indicator, list, status));
 		});
 	}
 };

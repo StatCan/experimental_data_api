@@ -83,5 +83,15 @@ module.exports = {
 				res.locals.json = jsonStat;
 				next();
 			});
+	},
+	'/:indicator_id/sdmx': (route, urlResolver) => {
+		route
+			.get(validateIndicatorId)
+			.get(async (req, res, next) => {
+				const sdmx = await indicators.getSDMX(req.params.indicator_id, urlResolver, {url: req.path}).catch(next);
+				res.set('Content-Type', 'application/vnd.sdmx.genericdata+xml;version=2.1');
+				res.send(sdmx);
+				res.end();
+			});
 	}
 };
