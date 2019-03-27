@@ -11,6 +11,12 @@ CREATE TABLE observation_values (
   value real
 );
 
+CREATE TABLE observation_status (
+  id serial PRIMARY KEY,
+  observation_value_id integer REFERENCES observation_values(id),
+  observation_status_id integer REFERENCES status(id)
+);
+
 CREATE TABLE observation_dimensions (
   id serial PRIMARY KEY,
   observation_id integer REFERENCES observations(id),
