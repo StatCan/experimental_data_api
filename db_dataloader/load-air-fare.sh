@@ -72,7 +72,15 @@ template2='BEGIN { FS="," }\
 { gsub(/Calgary/, "825", $2) } \
 { gsub(/Edmonton/, "835", $2) } \
 { gsub(/Vancouver/, "933", $2) } \
-/Canada/ {print ""} \
+/Canada/ {print "\
+  DO $$ \
+  BEGIN \
+    IF NOT EXISTS (SELECT * FROM vectors_duplicate WHERE id = "$8") THEN \
+      INSERT INTO vectors_duplicate (id, vector_id) \
+      VALUES ("$8", 53508622); \
+    END IF; \
+  END; $$;" \
+} \
 !/Canada/ && NR > 2 { print "\
   DO $$ \
   DECLARE \
