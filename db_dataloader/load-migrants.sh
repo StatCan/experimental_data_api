@@ -19,8 +19,10 @@ template='BEGIN { FS="," }\
 { gsub(/Northwest Territories including Nunavut/, "61", $2) } \
 { gsub(/Northwest Territories/, "61", $2) } \
 { gsub(/Nunavut/, "62", $2) } \
-/Marriage/ {print ""} \
-!/Marriage/ && NR > 2 { print "\
+{ gsub(/Returning emigrants/, "emigrants_returning", $4) } \
+{ gsub(/Net temporary emigrants/, "emigrants_temporary_net", $4) } \
+{ gsub(/Net non-permanent residents/, "non_permanent_residents_net", $4) } \
+NR > 2 { print "\
   DO $$ \
   DECLARE \
     indicator_id_val integer; \

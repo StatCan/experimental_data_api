@@ -19,6 +19,18 @@ VALUES
 (
   'emigrants', 'DEM_EMI', (SELECT id FROM frequencies WHERE name = 'quarterly'),
   hstore(ARRAY[['en', 'Emigrants'], ['fr', 'Émigrants']])
+),
+(
+  'emigrants_returning', '', (SELECT id FROM frequencies WHERE name = 'quarterly'),
+  hstore(ARRAY[['en', 'Returning emigrants'], ['fr', '']])
+),
+(
+  'emigrants_temporary_net', '', (SELECT id FROM frequencies WHERE name = 'quarterly'),
+  hstore(ARRAY[['en', 'Net temporary emigrants'], ['fr', '']])
+),
+(
+  'non_permanent_residents_net', '', (SELECT id FROM frequencies WHERE name = 'quarterly'),
+  hstore(ARRAY[['en', 'Net non-permanent residents'], ['fr', '']])
 );
 
 DO $$
@@ -26,7 +38,7 @@ DECLARE
   ind varchar;
   dim varchar;
 BEGIN
-FOREACH ind IN ARRAY ARRAY['population', 'births', 'deaths', 'immigrants', 'emigrants']
+FOREACH ind IN ARRAY ARRAY['population', 'births', 'deaths', 'immigrants', 'emigrants', 'emigrants_returning', 'emigrants_temporary_net', 'non_permanent_residents_net']
 LOOP
   FOREACH dim IN ARRAY ARRAY['geographicArea']
   LOOP
