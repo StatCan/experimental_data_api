@@ -9,6 +9,10 @@ VALUES
   hstore(ARRAY[['en', 'Geography'], ['fr', 'Géography']])
 ),
 (
+  'geographicArea_provinceDestination',
+  hstore(ARRAY[['en', 'Geography, province of destination'], ['fr', 'Géographie, province de destination']])
+),
+(
   'flightSector',
   hstore(ARRAY[['en', 'Flight Sector'], ['fr', '']])
 ),

@@ -46,6 +46,15 @@ CREATE TABLE observation_dimension_geographicArea (
 CREATE TRIGGER dimension_geographicArea_trigger AFTER INSERT ON observation_dimension_geographicArea
   FOR EACH ROW EXECUTE PROCEDURE add_dimension("geographicArea");
 
+CREATE TABLE observation_dimension_geographicArea_provinceDestination (
+  id serial PRIMARY KEY,
+  observation_id integer REFERENCES observations(id),
+  value varchar(7)
+);
+
+CREATE TRIGGER dimension_geographicArea_provinceDestination_trigger AFTER INSERT ON observation_dimension_geographicArea_provinceDestination
+  FOR EACH ROW EXECUTE PROCEDURE add_dimension("geographicArea_provinceDestination");
+
 CREATE TYPE sex AS ENUM('male', 'female', 'all');
 
 CREATE TABLE observation_dimension_sex (

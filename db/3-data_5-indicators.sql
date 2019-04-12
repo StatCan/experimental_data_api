@@ -31,6 +31,10 @@ VALUES
 (
   'non_permanent_residents_net', '', (SELECT id FROM frequencies WHERE name = 'quarterly'),
   hstore(ARRAY[['en', 'Net non-permanent residents'], ['fr', '']])
+),
+(
+  'interprovincial_migrants', '', (SELECT id FROM frequencies WHERE name = 'quarterly'),
+  hstore(ARRAY[['en', 'Interprovincial Migrants'], ['fr', 'Migrant Interprovinciaux']])
 );
 
 DO $$
@@ -48,6 +52,21 @@ LOOP
       (SELECT id FROM dimensions WHERE name = dim)
     );
   END LOOP;
+END LOOP;
+END; $$;
+
+DO $$
+DECLARE
+  ind varchar = 'interprovincial_migrants';
+  dim varchar;
+BEGIN
+FOREACH dim IN ARRAY ARRAY['geographicArea', 'geographicArea_provinceDestination']
+LOOP
+  INSERT INTO indicator_dimensions (indicator_id, dimension_id)
+  VALUES (
+    (SELECT id FROM indicators WHERE name = ind),
+    (SELECT id FROM dimensions WHERE name = dim)
+  );
 END LOOP;
 END; $$;
 
