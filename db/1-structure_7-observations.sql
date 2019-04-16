@@ -23,10 +23,40 @@ CREATE TABLE observation_dimension_geographicArea (
   value varchar(7)
 );
 
+CREATE TABLE observation_dimension_seasonallyAdjusted (
+  id serial PRIMARY KEY,
+  observation_id integer REFERENCES observations(id),
+  value boolean
+);
+
 CREATE TABLE observation_dimension_geographicArea_provinceDestination (
   id serial PRIMARY KEY,
   observation_id integer REFERENCES observations(id),
   value varchar(7)
+);
+
+CREATE TABLE observation_dimension_consumerPriceProduct(
+  id serial PRIMARY KEY,
+  observation_id integer REFERENCES observations(id),
+  value cpiProduct
+);
+
+CREATE TABLE observation_dimension_priceBaseDate(
+  id serial PRIMARY KEY,
+  observation_id integer REFERENCES observations(id),
+  value date
+);
+
+CREATE TABLE observation_dimension_weightPricePeriod(
+  id serial PRIMARY KEY,
+  observation_id integer REFERENCES observations(id),
+  value cpiWeightPricePeriod
+);
+
+CREATE TABLE observation_dimension_weightGeographicDistribution(
+  id serial PRIMARY KEY,
+  observation_id integer REFERENCES observations(id),
+  value cpiWeightGeographicDistribution
 );
 
 CREATE TABLE observation_dimension_sex (

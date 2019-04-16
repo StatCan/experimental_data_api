@@ -31,4 +31,8 @@ VALUES
 (
   'business_daily', 'B',
   hstore(ARRAY[['en', 'Daily, business week'], ['fr', '']])
+),
+(
+  'occasional', 'X',
+  hstore(ARRAY[['en', 'Occasional'], ['fr', 'Occasionnelle']])
 );
