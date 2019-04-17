@@ -1,10 +1,11 @@
 #!/bin/sh
 source fn.sh
+source sgc.sh
 
 cube=23100036
 template='BEGIN { FS="," }\
-{ gsub(/"/, "", $1) gsub(/"/, "", $2) gsub(/"/, "", $4) gsub(/"/, "", $5) gsub(/"/, "", $10) gsub(/v/, "", $10) gsub(/""/, "NULL", $12) gsub(/"/, "", $12) gsub(/"/, "", $13) }; \
-{ gsub(/Canada/, "01", $2) } \
+{ gsub(/"/, "", $1) gsub(/"/, "", $4) gsub(/"/, "", $5) gsub(/"/, "", $10) gsub(/v/, "", $10) gsub(/""/, "NULL", $12) gsub(/"/, "", $12) gsub(/"/, "", $13) }; \
+'$(get_sgc 2)' \
 { gsub(/Domestic and international/, "domestic_and_international", $4) } \
 { gsub(/Domestic/, "domestic", $4) } \
 { gsub(/Short-haul/, "shortHaul", $4) } \
@@ -61,17 +62,8 @@ run_query ${cube} "${template}"
 
 cube2=23100237
 template2='BEGIN { FS="," }\
-{ gsub(/"/, "", $1) gsub(/"/, "", $2) gsub(/"/, "", $8) gsub(/v/, "", $8) gsub(/""/, "NULL", $10) gsub(/"/, "", $10) gsub(/"/, "", $11) }; \
-{ gsub(/Halifax/, "205", $2) } \
-{ gsub(/Montréal/, "462", $2) } \
-{ gsub(/Ottawa/, "3506008", $2) } \
-{ gsub(/Toronto/, "535", $2) } \
-{ gsub(/Winnipeg/, "602", $2) } \
-{ gsub(/Saskatoon/, "725", $2) } \
-{ gsub(/Regina/, "705", $2) } \
-{ gsub(/Calgary/, "825", $2) } \
-{ gsub(/Edmonton/, "835", $2) } \
-{ gsub(/Vancouver/, "933", $2) } \
+{ gsub(/"/, "", $1) gsub(/"/, "", $8) gsub(/v/, "", $8) gsub(/""/, "NULL", $10) gsub(/"/, "", $10) gsub(/"/, "", $11) }; \
+'$(get_sgc 2)' \
 /Canada/ {print "\
   DO $$ \
   BEGIN \

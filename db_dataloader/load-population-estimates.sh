@@ -1,24 +1,11 @@
 #!/bin/sh
 source fn.sh
+source sgc.sh
 
 cube=17100009
 template='BEGIN { FS="," }\
-{ gsub(/"/, "", $1) gsub(/"/, "", $2) gsub(/"/, "", $8) gsub(/v/, "", $8) gsub(/"/, "", $10) }; \
-{ gsub(/Canada/, "01", $2) } \
-{ gsub(/Newfoundland and Labrador/, "10", $2) } \
-{ gsub(/Prince Edward Island/, "11", $2) } \
-{ gsub(/Nova Scotia/, "12", $2) } \
-{ gsub(/New Brunswick/, "13", $2) } \
-{ gsub(/Quebec/, "24", $2) } \
-{ gsub(/Ontario/, "35", $2) } \
-{ gsub(/Manitoba/, "46", $2) } \
-{ gsub(/Saskatchewan/, "47", $2) } \
-{ gsub(/Alberta/, "48", $2) } \
-{ gsub(/British Columbia/, "59", $2) } \
-{ gsub(/Yukon/, "60", $2) } \
-{ gsub(/Northwest Territories including Nunavut/, "61", $2) } \
-{ gsub(/Northwest Territories/, "61", $2) } \
-{ gsub(/Nunavut/, "62", $2) } \
+{ gsub(/"/, "", $1) gsub(/"/, "", $8) gsub(/v/, "", $8) gsub(/"/, "", $10) }; \
+'$(get_sgc 2)' \
 NR > 2 { print "\
   DO $$ \
   DECLARE \
