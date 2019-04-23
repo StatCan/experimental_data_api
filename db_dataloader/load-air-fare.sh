@@ -19,15 +19,10 @@ template='BEGIN { FS="," }\
 NR > 2 { print "\
   DO $$ \
   DECLARE \
-    indicator_id_val integer; \
+    indicator_name varchar = \x27airFares\x27; \
     observation_id_val integer; \
-    observation_value_id_val integer; \
   BEGIN \
-    SELECT id INTO indicator_id_val FROM indicators WHERE name = \x27airFares\x27; \
-    \
-    INSERT INTO observations (id, indicator_id, period) \
-    VALUES(DEFAULT, indicator_id_val, TO_DATE(\x27"$1"-01\x27, \x27YYYY-MM-DD\x27)) \
-    RETURNING id INTO observation_id_val; \
+    SELECT add_observation (indicator_name, \x27"$1"-01\x27, "$12", \x27"$13"\x27) INTO observation_id_val; \
     \
     INSERT INTO observation_dimension_geographicArea (observation_id, value) \
     VALUES(observation_id_val, \x27"$2"\x27); \
@@ -38,24 +33,7 @@ NR > 2 { print "\
     INSERT INTO observation_dimension_airFareTypeGroup (observation_id, value) \
     VALUES(observation_id_val, \x27"$5"\x27); \
     \
-    INSERT INTO observation_values (observation_id, date, value) \
-    VALUES(observation_id_val, NOW(), "$12") \
-    RETURNING id INTO observation_value_id_val; \
-    \
-    IF NOT \x27"$13"\x27 = \x27\x27 THEN \
-      INSERT INTO observation_status (observation_value_id, observation_status_id) \
-      VALUES(\
-        observation_value_id_val, \
-        (SELECT id FROM status WHERE symbol = \x27"$13"\x27) \
-      ); \
-    END IF; \
-    \
-    IF NOT EXISTS (SELECT * FROM vectors WHERE id = "$10") THEN \
-      INSERT INTO vectors (id, indicator_id, dimensions) \
-      VALUES ("$10", indicator_id_val, ( \
-        SELECT dimensions FROM observation_dimensions WHERE observation_id = observation_id_val) - \x27period\x27::text \
-      ); \
-    END IF; \
+    PERFORM add_vector ("$10", observation_id_val); \
   END; $$;"\
 }'
 run_query ${cube} "${template}"
@@ -76,15 +54,10 @@ template2='BEGIN { FS="," }\
 !/Canada/ && NR > 2 { print "\
   DO $$ \
   DECLARE \
-    indicator_id_val integer; \
+    indicator_name varchar = \x27airFares\x27; \
     observation_id_val integer; \
-    observation_value_id_val integer; \
   BEGIN \
-    SELECT id INTO indicator_id_val FROM indicators WHERE name = \x27airFares\x27; \
-    \
-    INSERT INTO observations (id, indicator_id, period) \
-    VALUES(DEFAULT, indicator_id_val, TO_DATE(\x27"$1"-01\x27, \x27YYYY-MM-DD\x27)) \
-    RETURNING id INTO observation_id_val; \
+    SELECT add_observation (\x27airFares\x27, \x27"$1"-01\x27, "$10", \x27"$11"\x27) INTO observation_id_val; \
     \
     INSERT INTO observation_dimension_geographicArea (observation_id, value) \
     VALUES(observation_id_val, \x27"$2"\x27); \
@@ -95,24 +68,7 @@ template2='BEGIN { FS="," }\
     INSERT INTO observation_dimension_airFareTypeGroup (observation_id, value) \
     VALUES(observation_id_val, \x27all\x27); \
     \
-    INSERT INTO observation_values (observation_id, date, value) \
-    VALUES(observation_id_val, NOW(), "$10") \
-    RETURNING id INTO observation_value_id_val; \
-    \
-    IF NOT \x27"$11"\x27 = \x27\x27 THEN \
-      INSERT INTO observation_status (observation_value_id, observation_status_id) \
-      VALUES(\
-        observation_value_id_val, \
-        (SELECT id FROM status WHERE symbol = \x27"$11"\x27) \
-      ); \
-    END IF; \
-    \
-    IF NOT EXISTS (SELECT * FROM vectors WHERE id = "$8") THEN \
-      INSERT INTO vectors (id, indicator_id, dimensions) \
-      VALUES ("$8", indicator_id_val, ( \
-        SELECT dimensions FROM observation_dimensions WHERE observation_id = observation_id_val) - \x27period\x27::text \
-      ); \
-    END IF; \
+    PERFORM add_vector ("$8", observation_id_val); \
   END; $$;"\
 }'
 run_query ${cube2} "${template2}"
