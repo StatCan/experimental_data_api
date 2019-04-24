@@ -55,8 +55,6 @@ CREATE TABLE observation_dimension_geographicArea_provinceDestination (
 CREATE TRIGGER dimension_geographicArea_provinceDestination_trigger AFTER INSERT ON observation_dimension_geographicArea_provinceDestination
   FOR EACH ROW EXECUTE PROCEDURE add_dimension("geographicArea_provinceDestination");
 
-CREATE TYPE sex AS ENUM('male', 'female', 'all');
-
 CREATE TABLE observation_dimension_sex (
   id serial PRIMARY KEY,
   observation_id integer REFERENCES observations(id),
@@ -66,8 +64,6 @@ CREATE TABLE observation_dimension_sex (
 CREATE TRIGGER dimension_sex_trigger AFTER INSERT ON observation_dimension_sex
   FOR EACH ROW EXECUTE PROCEDURE add_dimension("sex");
 
-CREATE TYPE flightSector AS ENUM('domestic_and_international', 'domestic', 'international', 'shortHaul', 'longHaul');
-
 CREATE TABLE observation_dimension_flightSector (
   id serial PRIMARY KEY,
   observation_id integer REFERENCES observations(id),
@@ -76,8 +72,6 @@ CREATE TABLE observation_dimension_flightSector (
 
 CREATE TRIGGER dimension_flightSector_trigger AFTER INSERT ON observation_dimension_flightSector
   FOR EACH ROW EXECUTE PROCEDURE add_dimension("flightSector");
-
-CREATE TYPE airFareTypeGroup AS ENUM('all', 'business', 'economy', 'discounted', 'other');
 
 CREATE TABLE observation_dimension_airFareTypeGroup(
   id serial PRIMARY KEY,
