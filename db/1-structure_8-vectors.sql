@@ -1,7 +1,7 @@
 CREATE TABLE vectors (
   id integer PRIMARY KEY,
   indicator_id integer REFERENCES indicators(id),
-  dimensions hstore
+  dimensions jsonb
 );
 
 CREATE TABLE vectors_duplicate (

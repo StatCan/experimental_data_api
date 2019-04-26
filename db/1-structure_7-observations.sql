@@ -20,18 +20,18 @@ CREATE TABLE observation_status (
 CREATE TABLE observation_dimensions (
   id serial PRIMARY KEY,
   observation_id integer REFERENCES observations(id),
-  dimensions hstore
+  dimensions jsonb
 );
 
 CREATE OR REPLACE FUNCTION add_dimension() RETURNS TRIGGER AS $$
   DECLARE
   BEGIN
     IF ((SELECT COUNT(observation_id) FROM observation_dimensions WHERE observation_id = NEW.observation_id) = 0) THEN
-      INSERT INTO observation_dimensions (observation_id, dimensions) VALUES(NEW.observation_id, '');
+      INSERT INTO observation_dimensions (observation_id, dimensions) VALUES(NEW.observation_id, jsonb('{}'));
     END IF;
 
     UPDATE observation_dimensions
-    SET dimensions = dimensions || hstore(TG_ARGV[0], CAST(NEW.value AS text))
+    SET dimensions = dimensions || jsonb_build_object(TG_ARGV[0], NEW.value)
     WHERE observation_id = NEW.observation_id;
 
     RETURN NEW;
