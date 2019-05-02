@@ -15,10 +15,10 @@ template='BEGIN { FS="," }\
   BEGIN \
     SELECT add_observation (indicator_name, \x27"$1"-01\x27, "$11") INTO observation_id_val; \
     \
+    PERFORM add_vector ("$9", observation_id_val); \
+    \
     INSERT INTO observation_dimension_geographicArea (observation_id, value) \
     VALUES(observation_id_val, \x27"$2"\x27); \
-    \
-    PERFORM add_vector ("$9", observation_id_val); \
   END; $$;"\
 }'
 

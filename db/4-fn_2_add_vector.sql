@@ -7,12 +7,10 @@ AS $vector_id$
   DECLARE
   BEGIN
     IF NOT EXISTS (SELECT * FROM vectors WHERE id = vector_id) THEN
-      INSERT INTO vectors (id, indicator_id, dimensions)
+      INSERT INTO vectors (id, indicator_id, observation_id)
       VALUES (vector_id, (
         SELECT indicator_id FROM observations WHERE id = observation_id_val
-      ), (
-        SELECT dimensions FROM observation_dimensions WHERE observation_id = observation_id_val)
-      );
+      ), observation_id_val);
     END IF;
 
     RETURN vector_id;

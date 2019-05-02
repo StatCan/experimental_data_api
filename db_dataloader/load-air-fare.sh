@@ -24,6 +24,8 @@ NR > 2 { print "\
   BEGIN \
     SELECT add_observation (indicator_name, \x27"$1"-01\x27, "$12", \x27"$13"\x27) INTO observation_id_val; \
     \
+    PERFORM add_vector ("$10", observation_id_val); \
+    \
     INSERT INTO observation_dimension_geographicArea (observation_id, value) \
     VALUES(observation_id_val, \x27"$2"\x27); \
     \
@@ -32,8 +34,6 @@ NR > 2 { print "\
     \
     INSERT INTO observation_dimension_airFareTypeGroup (observation_id, value) \
     VALUES(observation_id_val, \x27"$5"\x27); \
-    \
-    PERFORM add_vector ("$10", observation_id_val); \
   END; $$;"\
 }'
 run_query ${cube} "${template}"
@@ -59,6 +59,8 @@ template2='BEGIN { FS="," }\
   BEGIN \
     SELECT add_observation (\x27airFares\x27, \x27"$1"-01\x27, "$10", \x27"$11"\x27) INTO observation_id_val; \
     \
+    PERFORM add_vector ("$8", observation_id_val); \
+    \
     INSERT INTO observation_dimension_geographicArea (observation_id, value) \
     VALUES(observation_id_val, \x27"$2"\x27); \
     \
@@ -67,8 +69,6 @@ template2='BEGIN { FS="," }\
     \
     INSERT INTO observation_dimension_airFareTypeGroup (observation_id, value) \
     VALUES(observation_id_val, \x27all\x27); \
-    \
-    PERFORM add_vector ("$8", observation_id_val); \
   END; $$;"\
 }'
 run_query ${cube2} "${template2}"
