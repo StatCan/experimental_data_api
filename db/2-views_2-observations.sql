@@ -11,6 +11,19 @@ CREATE VIEW "vObservations" AS
     FROM observation_status os
     INNER JOIN status s ON os.observation_status_id = s.id
     GROUP BY observation_value_id
+  ),
+  observation_dimensions AS (
+    SELECT
+      o.id observation_id,
+      jsonb_strip_nulls(jsonb_build_object(
+        'geographicArea', ga.value,
+        'flightSector', fs.value,
+        'airFareTypeGroup', atg.value
+      )) dimensions
+    FROM observations o
+    LEFT JOIN observation_dimension_geographicArea ga ON o.id = ga.observation_id
+    LEFT JOIN observation_dimension_flightSector fs ON o.id = fs.observation_id
+    LEFT JOIN observation_dimension_airFareTypeGroup atg ON o.id = atg.observation_id
   )
   SELECT
     o.id, i.name AS indicator, period, dimensions, value, status, dateModified as "dateModified"

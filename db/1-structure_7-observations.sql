@@ -17,34 +17,11 @@ CREATE TABLE observation_status (
   observation_status_id integer REFERENCES status(id)
 );
 
-CREATE TABLE observation_dimensions (
-  id serial PRIMARY KEY,
-  observation_id integer REFERENCES observations(id),
-  dimensions jsonb
-);
-
-CREATE OR REPLACE FUNCTION add_dimension() RETURNS TRIGGER AS $$
-  DECLARE
-  BEGIN
-    IF ((SELECT COUNT(observation_id) FROM observation_dimensions WHERE observation_id = NEW.observation_id) = 0) THEN
-      INSERT INTO observation_dimensions (observation_id, dimensions) VALUES(NEW.observation_id, jsonb('{}'));
-    END IF;
-
-    UPDATE observation_dimensions
-    SET dimensions = dimensions || jsonb_build_object(TG_ARGV[0], NEW.value)
-    WHERE observation_id = NEW.observation_id;
-
-    RETURN NEW;
-  END; $$ LANGUAGE plpgsql;
-
 CREATE TABLE observation_dimension_geographicArea (
   id serial PRIMARY KEY,
   observation_id integer REFERENCES observations(id),
   value varchar(7)
 );
-
-CREATE TRIGGER dimension_geographicArea_trigger AFTER INSERT ON observation_dimension_geographicArea
-  FOR EACH ROW EXECUTE PROCEDURE add_dimension("geographicArea");
 
 CREATE TABLE observation_dimension_geographicArea_provinceDestination (
   id serial PRIMARY KEY,
@@ -52,17 +29,11 @@ CREATE TABLE observation_dimension_geographicArea_provinceDestination (
   value varchar(7)
 );
 
-CREATE TRIGGER dimension_geographicArea_provinceDestination_trigger AFTER INSERT ON observation_dimension_geographicArea_provinceDestination
-  FOR EACH ROW EXECUTE PROCEDURE add_dimension("geographicArea_provinceDestination");
-
 CREATE TABLE observation_dimension_sex (
   id serial PRIMARY KEY,
   observation_id integer REFERENCES observations(id),
   value sex
 );
-
-CREATE TRIGGER dimension_sex_trigger AFTER INSERT ON observation_dimension_sex
-  FOR EACH ROW EXECUTE PROCEDURE add_dimension("sex");
 
 CREATE TABLE observation_dimension_flightSector (
   id serial PRIMARY KEY,
@@ -70,14 +41,8 @@ CREATE TABLE observation_dimension_flightSector (
   value flightSector
 );
 
-CREATE TRIGGER dimension_flightSector_trigger AFTER INSERT ON observation_dimension_flightSector
-  FOR EACH ROW EXECUTE PROCEDURE add_dimension("flightSector");
-
 CREATE TABLE observation_dimension_airFareTypeGroup(
   id serial PRIMARY KEY,
   observation_id integer REFERENCES observations(id),
   value airFareTypeGroup
 );
-
-CREATE TRIGGER dimension_airFareTypeGroup_trigger AFTER INSERT ON observation_dimension_airFareTypeGroup
-  FOR EACH ROW EXECUTE PROCEDURE add_dimension("airFareTypeGroup");
