@@ -52,6 +52,12 @@ LOOP
       (SELECT id FROM dimensions WHERE name = dim)
     );
   END LOOP;
+
+  INSERT INTO indicator_subjects (indicator_id, subject_id)
+  VALUES (
+    (SELECT id FROM indicators WHERE name = ind),
+    (SELECT id FROM subjects WHERE name = 'population_and_demography')
+  );
 END LOOP;
 END; $$;
 
@@ -68,6 +74,12 @@ LOOP
     (SELECT id FROM dimensions WHERE name = dim)
   );
 END LOOP;
+
+INSERT INTO indicator_subjects (indicator_id, subject_id)
+VALUES (
+  (SELECT id FROM indicators WHERE name = ind),
+  (SELECT id FROM subjects WHERE name = 'population_and_demography')
+);
 END; $$;
 
 INSERT INTO indicators (name, frequency_id, title)
@@ -90,4 +102,10 @@ LOOP
     (SELECT id FROM dimensions WHERE name = dim)
   );
 END LOOP;
+
+INSERT INTO indicator_subjects (indicator_id, subject_id)
+VALUES (
+  (SELECT id FROM indicators WHERE name = ind),
+  (SELECT id FROM subjects WHERE name = 'transportation')
+);
 END; $$
