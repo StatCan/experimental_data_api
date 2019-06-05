@@ -5,10 +5,10 @@ CREATE MATERIALIZED VIEW "vObservationsDimensions" AS
       'geographicArea', ga.value,
       'seasonallyAdjusted', sa.value,
       'geographicAreaProvinceDestination', gapd.value,
-      'consumerPriceProduct', cpip.observation_id,
-      'priceBaseDate', pbd.observation_id,
-      'weightPricePeriod', wpp.observation_id,
-      'weightGeographicDistribution', wgd.observation_id,
+      'consumerPriceProduct', cpip.value,
+      'priceBaseDate', pbd.value,
+      'weightPricePeriod', wpp.value,
+      'weightGeographicDistribution', wgd.value,
       'flightSector', fs.value,
       'airFareTypeGroup', atg.value
     )) dimensions
