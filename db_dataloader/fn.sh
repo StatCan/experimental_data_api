@@ -8,6 +8,7 @@ echo "Loading ${cube}..." \
     && wget -qnc https://www150.statcan.gc.ca/n1/tbl/csv/${cube}-eng.zip \
     && unzip -q ${cube}-eng.zip ${cube}.csv \
     && awk "$template" "${cube}.csv" | psql -q \
+    && psql -c "REFRESH MATERIALIZED VIEW \"vObservationsDimensions\";" \
     && rm  \
       "${cube}-eng.zip" \
       "${cube}.csv" \
