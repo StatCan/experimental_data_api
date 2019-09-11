@@ -360,4 +360,96 @@ CREATE TYPE cpiWeightPricePeriod AS ENUM(
 CREATE TYPE cpiWeightGeographicDistribution AS ENUM(
   'toCanada',
   'toSelectedGeographies'
-)
+);
+
+CREATE TABLE observation_dimension_geographicArea (
+  id serial PRIMARY KEY,
+  observation_id integer REFERENCES observations(id),
+  value varchar(7)
+);
+
+CREATE TABLE observation_dimension_seasonallyAdjusted (
+  id serial PRIMARY KEY,
+  observation_id integer REFERENCES observations(id),
+  value boolean
+);
+
+CREATE TABLE observation_dimension_geographicArea_provinceDestination (
+  id serial PRIMARY KEY,
+  observation_id integer REFERENCES observations(id),
+  value varchar(7)
+);
+
+CREATE TABLE observation_dimension_consumerPriceProduct(
+  id serial PRIMARY KEY,
+  observation_id integer REFERENCES observations(id),
+  value cpiProduct
+);
+
+CREATE TABLE observation_dimension_priceBaseDate(
+  id serial PRIMARY KEY,
+  observation_id integer REFERENCES observations(id),
+  value date
+);
+
+CREATE TABLE observation_dimension_weightPricePeriod(
+  id serial PRIMARY KEY,
+  observation_id integer REFERENCES observations(id),
+  value cpiWeightPricePeriod
+);
+
+CREATE TABLE observation_dimension_weightGeographicDistribution(
+  id serial PRIMARY KEY,
+  observation_id integer REFERENCES observations(id),
+  value cpiWeightGeographicDistribution
+);
+
+CREATE TABLE observation_dimension_sex (
+  id serial PRIMARY KEY,
+  observation_id integer REFERENCES observations(id),
+  value sex
+);
+
+CREATE TABLE observation_dimension_flightSector (
+  id serial PRIMARY KEY,
+  observation_id integer REFERENCES observations(id),
+  value flightSector
+);
+
+CREATE TABLE observation_dimension_airFareTypeGroup(
+  id serial PRIMARY KEY,
+  observation_id integer REFERENCES observations(id),
+  value airFareTypeGroup
+);
+
+ALTER MATERIALIZED VIEW "mvObservationsDimensions" RENAME TO "mvObservationsDimensions_old";
+
+CREATE MATERIALIZED VIEW "mvObservationsDimensions" AS
+  SELECT
+    o.id observation_id,
+    jsonb_strip_nulls(jsonb_build_object(
+      'geographicArea', ga.value,
+      'seasonallyAdjusted', sa.value,
+      'geographicAreaProvinceDestination', gapd.value,
+      'consumerPriceProduct', cpip.value,
+      'priceBaseDate', pbd.value,
+      'weightPricePeriod', wpp.value,
+      'weightGeographicDistribution', wgd.value,
+      'flightSector', fs.value,
+      'airFareTypeGroup', atg.value
+    )) dimensions
+  FROM observations o
+  LEFT JOIN observation_dimension_geographicArea ga ON o.id = ga.observation_id
+  LEFT JOIN observation_dimension_seasonallyAdjusted sa ON o.id = sa.observation_id
+  LEFT JOIN observation_dimension_geographicArea_provinceDestination gapd ON o.id = gapd.observation_id
+  LEFT JOIN observation_dimension_consumerPriceProduct cpip ON o.id = cpip.observation_id
+  LEFT JOIN observation_dimension_priceBaseDate pbd ON o.id = pbd.observation_id
+  LEFT JOIN observation_dimension_weightPricePeriod wpp ON o.id = wpp.observation_id
+  LEFT JOIN observation_dimension_weightGeographicDistribution wgd ON o.id = wgd.observation_id
+  LEFT JOIN observation_dimension_flightSector fs ON o.id = fs.observation_id
+  LEFT JOIN observation_dimension_airFareTypeGroup atg ON o.id = atg.observation_id;
+
+  CREATE OR REPLACE VIEW "vObservationsDimensions" AS
+  SELECT * FROM "mvObservationsDimensions";
+
+  DROP MATERIALIZED VIEW "mvObservationsDimensions_old";

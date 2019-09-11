@@ -4,32 +4,46 @@ x-env:
   &env
   PGHOST: db
   PGDATABASE: statcan_api
-  PGUSER: postgres
-  #PGPASSWORD: pwd1234
+  READONLY_PWD: mypwd
 
 services:
   db:
-    image: postgres:11.2-alpine
+    image: postgres:11-alpine
     environment:
       POSTGRES_DB: statcan_api
       POSTGRES_USER: postgres
-      #POSTGRES_PASSWORD: pwd1234
+      POSTGRES_PASSWORD: pwd1234
     ports:
       - '5432:5432'
     volumes:
-      - ./db/:/docker-entrypoint-initdb.d/
       - db-data:/var/lib/postgresql/data
-  db_dataloader:
-    image: postgres:11.2-alpine
+
+  pg-evolve:
+    image: artifactory.cloud.statcan.ca/docker/pg-evolve
     environment:
       << : *env
+      PGUSER: postgres
+      PGPASSWORD: pwd1234
+      PGOPTIONS: "-c custom.readonly_pwd=$${READONLY_PWD}"
+    volumes:
+      - ./db:/opt/pg-evolve/evolutions
+    command: ["sh", "-c", "until psql -c '\\q' 2> /dev/null; do sleep 1; done && pg-evolve"]
+
+  db_dataloader:
+    image: postgres:11-alpine
+    environment:
+      << : *env
+      PGUSER: postgres
+      PGPASSWORD: pwd1234
     depends_on:
       - db
+      - pg-evolve
     volumes:
       - ./db_dataloader/:/init
     working_dir: /init
     entrypoint: ''
     command: ['./wait-for.sh', './load-data.sh']
+
   api:
     build:
       context: ./api
@@ -39,6 +53,8 @@ services:
       - db
     environment:
       << : *env
+      PGUSER: api
+      PGPASSWORD: "$${READONLY_PWD}"
       URL_ROOT: http://localhost:8000
     ports:
       - '8000:8000'
