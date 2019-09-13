@@ -1,0 +1,10 @@
+image:
+  repository: postgres
+  tag: 11-alpine
+
+postgresqlDatabase: #{POSTGRES_DB}
+
+securityContext:
+  enabled: true
+  fsGroup: 70
+  runAsUser: 70

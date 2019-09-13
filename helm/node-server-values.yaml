@@ -1,0 +1,39 @@
+image:
+  repository: #{IMAGE_REPOSITORY}
+  tag: #{IMAGE_TAG}
+imagePullSecrets:
+  - name: #{IMAGE_PULL_SECRET}
+env:
+  URL_ROOT: #{URL_ROOT}
+  PGHOST: #{DB_HOST}
+  PGDATABASE: #{DB_NAME}
+  PGUSER: #{DB_READONLY_USER}
+envSecrets:
+  PGPASSWORD: #{DB_READONLY_VALUE}
+initContainers:
+  - name: api-pg-evolve
+    image: #{IMAGE_DB_REPOSITORY}:#{IMAGE_DB_TAG}
+    imagePullSecrets:
+      - name: #{IMAGE_PULL_SECRET}
+    env:
+      - name: PGHOST
+        value: #{DB_HOST}
+      - name: PGDATABASE
+        value: #{DB_NAME}
+      - name: PGUSER
+        value: #{DB_USER}
+      - name: PGPASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: #{DB_SECRET_NAME}
+            key: #{DB_SECRET_KEY}
+      - name: PGOPTIONS
+        value: "-c custom.readonly_pwd=#{DB_READONLY_VALUE}"
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: istio
+  hosts:
+    - host: #{INGRESS_HOST}
+      paths:
+        - /*
