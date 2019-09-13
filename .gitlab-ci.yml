@@ -1,0 +1,45 @@
+image: alpine:latest
+
+variables:
+  DOCKER_TLS_CERTDIR: ""
+
+stages:
+  - test
+  - build
+  # - deploy
+
+lint:
+  stage: test
+  image: node
+  before_script:
+    - cd api
+    - npm install
+  script:
+    - npm run test-lint
+
+build:
+  stage: build
+  image: docker:stable-git
+  services:
+  - docker:stable-dind
+  script:
+    - setup_docker
+    - build api "${CI_APPLICATION_REPOSITORY}"
+    - build db "${CI_APPLICATION_REPOSITORY}-db"
+  only:
+    - branches
+
+# deploy:
+#   stage: deploy
+#   image: octopusdeploy/octo
+#   script:
+#     - deploy
+#   only:
+#     refs:
+#       - master
+
+# ---------------------------------------------------------------------------
+
+before_script:
+  - apk update && apk add git
+  - for script in .ci/*; do source $script; done
