@@ -1,6 +1,6 @@
 #!/bin/sh
-source fn.sh
-source sgc.sh
+source ./fn.sh
+source ./sgc.sh
 
 echo "Creating population estimates indicator"
 psql -q -c 'INSERT INTO indicators (name, sdmx_id, frequency_id, title)

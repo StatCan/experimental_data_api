@@ -1,5 +1,5 @@
 #!/bin/sh
-source fn.sh
+source ./fn.sh
 
 echo "Loading frequencies"
 psql -q -c 'INSERT INTO frequencies (name, sdmx_id, title)

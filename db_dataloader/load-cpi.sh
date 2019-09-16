@@ -1,7 +1,7 @@
 #!/bin/sh
-source fn.sh
-source sgc.sh
-source cpi.sh
+source ./fn.sh
+source ./sgc.sh
+source ./cpi.sh
 
 echo "Creating CPI indicators"
 psql -q -c 'INSERT INTO indicators (name, sdmx_id, frequency_id, title)

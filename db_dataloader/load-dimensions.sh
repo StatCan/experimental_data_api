@@ -1,5 +1,5 @@
 #!/bin/sh
-source fn.sh
+source ./fn.sh
 
 echo "Loading dimensions"
 psql -q -c 'INSERT INTO dimensions (name, title)

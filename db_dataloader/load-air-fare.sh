@@ -1,6 +1,6 @@
 #!/bin/sh
-source fn.sh
-source sgc.sh
+source ./fn.sh
+source ./sgc.sh
 
 echo "Creating airfaire indicator"
 psql -c 'INSERT INTO indicators (name, frequency_id, title)

@@ -1,5 +1,5 @@
 #!/bin/sh
-source fn.sh
+source ./fn.sh
 
 echo "Loading subjects"
 psql -q -c 'INSERT INTO subjects (name, title)

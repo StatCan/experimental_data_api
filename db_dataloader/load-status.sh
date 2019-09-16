@@ -1,5 +1,5 @@
 #!/bin/sh
-source fn.sh
+source ./fn.sh
 
 echo "Loading status"
 psql -q -c 'INSERT INTO status (name, symbol)
