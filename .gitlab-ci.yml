@@ -17,6 +17,15 @@ lint:
   script:
     - npm run test-lint
 
+unit:
+  stage: test
+  image: node
+  before_script:
+    - cd api
+    - npm install
+  script:
+    - npm run test-unit
+
 build:
   stage: build
   image: docker:stable-git
