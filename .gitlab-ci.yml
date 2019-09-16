@@ -6,7 +6,7 @@ variables:
 stages:
   - test
   - build
-  # - deploy
+  - deploy
 
 lint:
   stage: test
@@ -38,14 +38,14 @@ build:
   only:
     - branches
 
-# deploy:
-#   stage: deploy
-#   image: octopusdeploy/octo
-#   script:
-#     - deploy
-#   only:
-#     refs:
-#       - master
+deploy:
+  stage: deploy
+  image: octopusdeploy/octo
+  script:
+    - deploy
+  only:
+    refs:
+      - master
 
 # ---------------------------------------------------------------------------
 
