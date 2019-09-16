@@ -8,7 +8,7 @@ const listQuery = 'SELECT * FROM "vIndicators" ORDER BY "dateModified" LIMIT $1 
 const countQuery = 'SELECT COUNT(*) FROM "vIndicators"';
 const existQuery = 'SELECT COUNT(*) FROM  "vIndicators" WHERE id = $1';
 const getQuery = 'SELECT * FROM "vIndicators" WHERE id = $1 LIMIT 1';
-const getStatus = 'SELECT json_object(keys, values) status FROM (SELECT ARRAY_AGG(name) keys, ARRAY_AGG(symbol) "values" FROM status) s;'
+const getStatus = 'SELECT json_object(keys, values) status FROM (SELECT ARRAY_AGG(name) keys, ARRAY_AGG(symbol) "values" FROM status) s;';
 
 const indicatorIdValidation = /^[aA-zZ1-9_-]*$/;
 
