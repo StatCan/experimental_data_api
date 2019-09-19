@@ -1,0 +1,36 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: api-data-loader
+  namespace: daaas
+  labels:
+    app: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+        - name: api-data-loader
+          image: postgres:11-alpine
+          command:
+            - tail
+            - "-f"
+            - /dev/null
+          env:
+            - name: PGHOST
+              value: #{DB_HOST}
+            - name: PGDATABASE
+              value: #{DB_NAME}
+            - name: PGUSER
+              value: #{DB_USER}
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: #{DB_SECRET_NAME}
+                  key: #{DB_SECRET_KEY}
