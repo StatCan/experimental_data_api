@@ -7,7 +7,7 @@ const countQuery = 'SELECT COUNT(*) FROM "vTimeseries"';
 const existQuery = 'SELECT COUNT(*) FROM  "vTimeseries" WHERE id = $1';
 const getQuery = 'SELECT * FROM "vTimeseries" WHERE id = $1 LIMIT 1';
 
-const timeseriesIdValidation = /^[aA-zZ1-9_-]*$/;
+const timeseriesIdValidation = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
 
 function format(timeserie, urlResolver) {
 	const self = urlResolver.resolve(`/timeseries/${timeserie.id}`);
