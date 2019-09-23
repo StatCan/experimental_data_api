@@ -1,14 +1,14 @@
-const indicators = require('./model');
+const timeseries = require('./model');
 const pagination = require('jsonapi-pagination');
 const {RequestError} = require('express-api-server');
 const paginationHelper = require('../../helpers/pagination');
 const {parsePeriod, parseDimensions} = require('../../helpers/parsers');
 
 async function validateIndicatorId(req, res, next) {
-	if (!indicators.isValid(req.params.indicator_id))
+	if (!timeseries.isValid(req.params.indicator_id))
 		return next(new RequestError(req, 400, 'Invalid indicator id'));
 
-	if (!await indicators.exists(req.params.indicator_id).catch(next))
+	if (!await timeseries.exists(req.params.indicator_id).catch(next))
 		return next(new RequestError(req, 404, `Indicator '${req.params.indicator_id}' not found`));
 
 	next();
@@ -20,7 +20,17 @@ module.exports = {
 			.get(async (req, res, next) => {
 				let pages = pagination(req);
 				let {start, count} = pages.limits;
-				let {length, list} = await indicators.list(start, count, urlResolver).catch(next);
+
+				const options = {};
+
+				if (req.query.indicator) {
+					if (!timeseries.isValid(req.query.indicator))
+						return next(new RequestError(req, 400, 'Invalid timeseries id'));
+
+					options.indicator = req.query.indicator;
+				}
+
+				let {length, list} = await timeseries.list(start, count, urlResolver, options).catch(next);
 				let links = paginationHelper.getLinks(pages, length, urlResolver);
 
 				res.locals.json = {
@@ -34,7 +44,7 @@ module.exports = {
 		route
 			.get(validateIndicatorId)
 			.get(async (req, res, next) => {
-				const indicator = await indicators.get(req.params.indicator_id, urlResolver).catch(next);
+				const indicator = await timeseries.get(req.params.indicator_id, urlResolver).catch(next);
 				res.locals.json = {
 					data: indicator
 				};
@@ -65,7 +75,7 @@ module.exports = {
 					}
 				}
 
-				let {length, list} = await indicators.listObservations(req.params.indicator_id, start, count, urlResolver, options).catch(next);
+				let {length, list} = await timeseries.listObservations(req.params.indicator_id, start, count, urlResolver, options).catch(next);
 				let links = paginationHelper.getLinks(pages, length, urlResolver);
 
 				res.locals.json = {
@@ -73,42 +83,6 @@ module.exports = {
 					data: list
 				};
 				next();
-			});
-	},
-	'/:indicator_id/timeseries': (route, urlResolver) => {
-		route
-			.get(validateIndicatorId)
-			.get(async (req, res, next) => {
-				let pages = pagination(req);
-				let {start, count} = pages.limits;
-
-				let {length, list} = await indicators.listTimeseries(req.params.indicator_id, start, count, urlResolver).catch(next);
-				let links = paginationHelper.getLinks(pages, length, urlResolver);
-
-				res.locals.json = {
-					links,
-					data: list
-				};
-				next();
-			});
-	},
-	'/:indicator_id/json-stat': (route, urlResolver) => {
-		route
-			.get(validateIndicatorId)
-			.get(async (req, res, next) => {
-				const jsonStat = await indicators.getJsonStat(req.params.indicator_id, urlResolver, {url: req.path}).catch(next);
-				res.locals.json = jsonStat;
-				next();
-			});
-	},
-	'/:indicator_id/sdmx': (route, urlResolver) => {
-		route
-			.get(validateIndicatorId)
-			.get(async (req, res, next) => {
-				const sdmx = await indicators.getSDMX(req.params.indicator_id, urlResolver, {url: req.path}).catch(next);
-				res.set('Content-Type', 'application/vnd.sdmx.genericdata+xml;version=2.1');
-				res.send(sdmx);
-				res.end();
 			});
 	}
 };

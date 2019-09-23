@@ -4,6 +4,7 @@
 
 *   [Indicators](#indicators)
 *   [Observations](#observations)
+*   [Timeseries](#timeseries)
 *   [Sources](#sources)
 *   [Revisions](#revisions)
 *   [Notes](#notes)
@@ -39,7 +40,8 @@ GET /indicators
     },
     "links": {
       "self": "https://api.statcan.gc.ca/indicators/death",
-      "observations": "https://api.statcan.gc.ca/indicators/death/observations"
+      "observations": "https://api.statcan.gc.ca/indicators/death/observations",
+      "timeseries": "https://api.statcan.gc.ca/indicators/death/timeseries"
     }
   }
 ]
@@ -72,7 +74,8 @@ GET /indicators/:indicator
   },
   "links": {
     "self": "https://api.statcan.gc.ca/indicators/death",
-    "observations": "https://api.statcan.gc.ca/indicators/death/observations"
+    "observations": "https://api.statcan.gc.ca/indicators/death/observations",
+    "timeseries": "https://api.statcan.gc.ca/indicators/death/timeseries"
   }
 }
 ```
@@ -96,12 +99,13 @@ GET /indicators/:indicator/observations
 [
   {
     "type": "observation",
-    "id": 79687078,
+    "id": "f7e24559-8e5e-463b-a521-d9bdaca2d03c",
     "attributes": {
       "indicator": {
         "id": "death",
         "url": "https://api.statcan.gc.ca/indicators/death"
       },
+      "timeseries": "648fbd4a-64b0-449d-83d9-539cfa4b83e5",
       "period": "2018-01-01",
       "dimensions": {
         "geographicArea": {
@@ -134,6 +138,7 @@ GET /observations
 | Name | Type | Description |
 |---|---|---|
 | indicator | string | The name of the indicator |
+| timeseries | string | The id of the timeseries |
 | period | string | A range of reference period. This range must be in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM(-DD)/YYYY-MM(-DD)`. Ex: `period=2008-01/2008-10` |
 | dimensions[:dimension_name] | string | Specify the dimension_name:value pair. Ex: `dimensions[geographicArea]=ON`. You can specify multiple value by repeating the parameter or via a comma-seperated value. Ex: `dimensions[geographicArea]=QC&dimensions[geographicArea]=ON` or `dimensions[geographicArea]=QC,ON` |
 
@@ -143,12 +148,13 @@ GET /observations
 [
   {
     "type": "observation",
-    "id": 79687078,
+    "id": "f7e24559-8e5e-463b-a521-d9bdaca2d03c",
     "attributes": {
       "indicator": {
         "id": "death",
         "url": "https://api.statcan.gc.ca/indicators/death"
       },
+      "timeseries": "648fbd4a-64b0-449d-83d9-539cfa4b83e5",
       "period": "2018-01-01",
       "dimensions": {
         "geographicArea": {
@@ -193,12 +199,13 @@ GET /observations/:observation_id
 ```json
 {
   "type": "observation",
-  "id": 79687078,
+  "id": "f7e24559-8e5e-463b-a521-d9bdaca2d03c",
   "attributes": {
     "indicator": {
       "id": "death",
       "url": "https://api.statcan.gc.ca/indicators/death"
     },
+    "timeseries": "648fbd4a-64b0-449d-83d9-539cfa4b83e5",
     "period": "2018-01-01",
     "dimensions": {
       "geographicArea": {
@@ -215,6 +222,105 @@ GET /observations/:observation_id
     "notes": "https://api.statcan.gc.ca/observations/79687078/notes"
   }
 }
+```
+
+### Timeseries ###
+
+#### List timeseries ####
+
+```
+GET /timeseries
+```
+
+###### Response ######
+
+```json
+[
+  {
+    "type": "timeseries",
+    "id": "648fbd4a-64b0-449d-83d9-539cfa4b83e5",
+    "attributes": {
+      "indicator": "births",
+      "dimensions": {
+        "geographicArea": "10"
+      }
+    },
+    "links": {
+      "self": "https://api.statcan.gc.ca/timeseries/648fbd4a-64b0-449d-83d9-539cfa4b83e5",
+      "observations": "https://api.statcan.gc.ca/timeseries/648fbd4a-64b0-449d-83d9-539cfa4b83e5/observations"
+    }
+  }
+]
+```
+
+### Get a single indicator ###
+
+```
+GET /timeserie/:timeserie
+```
+
+###### Response ######
+
+```json
+{
+  "type": "timeseries",
+  "id": "648fbd4a-64b0-449d-83d9-539cfa4b83e5",
+  "attributes": {
+    "indicator": "births",
+    "dimensions": {
+      "geographicArea": "10"
+    }
+  },
+  "links": {
+    "self": "https://api.statcan.gc.ca/timeseries/648fbd4a-64b0-449d-83d9-539cfa4b83e5",
+    "observations": "https://api.statcan.gc.ca/timeseries/648fbd4a-64b0-449d-83d9-539cfa4b83e5/observations"
+  }
+}
+```
+
+### List observations for an timeseries ###
+
+```
+GET /timeseries/:timeseries/observations
+```
+
+###### Parameteres ######
+
+| Name | Type | Description |
+|---|---|---|
+| period | string | A range of reference period. This range must be in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format: `YYYY-MM(-DD)/YYYY-MM(-DD)`. Ex: `period=2008-01/2008-10` |
+| dimensions[:dimension_name] | string | Specify the dimension_name:value pair. Ex: `dimensions[geographicArea]=ON`. You can specify multiple value by repeating the parameter or via a comma-seperated value. Ex: `dimensions[geographicArea]=QC&dimensions[geographicArea]=ON` or `dimensions[geographicArea]=QC,ON` |
+
+###### Response ######
+
+```json
+[
+  {
+    "type": "observation",
+    "id": "f7e24559-8e5e-463b-a521-d9bdaca2d03c",
+    "attributes": {
+      "indicator": {
+        "id": "death",
+        "url": "https://api.statcan.gc.ca/indicators/death"
+      },
+      "timeseries": "648fbd4a-64b0-449d-83d9-539cfa4b83e5",
+      "period": "2018-01-01",
+      "dimensions": {
+        "geographicArea": {
+          "@type":"iso-3166-1",
+          "@id":"CA"
+        }
+      },
+      "value": 78907,
+      "dateModified": "2018-06-14"
+    },
+    "links": {
+      "self": "https://api.statcan.gc.ca/observations/79687078",
+      "revisions": "https://api.statcan.gc.ca/observations/79687078/revisions",
+      "notes": "https://api.statcan.gc.ca/observations/79687078/notes"
+    }
+  }
+]
 ```
 
 ### Sources ###

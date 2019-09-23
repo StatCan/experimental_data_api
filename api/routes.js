@@ -3,6 +3,7 @@ const endpoints = {};
 for (const endpoint of [
 	'indicators',
 	'observations',
+	'timeseries',
 	'sources',
 	'revisions',
 	'notes',

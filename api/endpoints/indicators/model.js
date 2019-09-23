@@ -3,6 +3,7 @@ const jsonapiHelper = require('../../helpers/jsonapi');
 const jsonStat = require('../../helpers/json-stat');
 const sdmx = require('../../helpers/sdmx');
 const observations = require('../observations/model');
+const timeseries = require('../timeseries/model');
 
 const listQuery = 'SELECT * FROM "vIndicators" ORDER BY "dateModified" LIMIT $1 OFFSET $2';
 const countQuery = 'SELECT COUNT(*) FROM "vIndicators"';
@@ -21,7 +22,8 @@ function format(indicator, urlResolver) {
 			self,
 			'json-stat': `${self}/json-stat`,
 			'sdmx': `${self}/sdmx`,
-			'observations': `${self}/observations`
+			'observations': `${self}/observations`,
+			'timeseries': `${self}/timeseries`,
 		}
 	});
 }
@@ -67,6 +69,9 @@ module.exports = {
 	},
 	listObservations: async function(id, start, count, urlResolver, options) {
 		return observations.list(start, count, urlResolver, {indicator: id, ...options});
+	},
+	listTimeseries: async function(id, start, count, urlResolver) {
+		return timeseries.list(start, count, urlResolver, {timeseries: id});
 	},
 	getJsonStat: async function(id, urlResolver, options) {
 		return new Promise(async (resolve, reject) => {

@@ -21,6 +21,10 @@ function getFilters(options) {
 		filter.push(`indicator = '${options.indicator}'`);
 	}
 
+	if (options.timeseries) {
+		filter.push(`timeseries = '${options.timeseries}'`);
+	}
+
 	if (options.period) {
 		let start;
 		let end;
