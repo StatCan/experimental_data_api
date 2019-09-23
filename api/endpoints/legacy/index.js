@@ -48,20 +48,9 @@ module.exports = {
 			.get(validateVectorId)
 			.get(async (req, res, next) => {
 				const vector = await vectors.get(req.params.vector_id, urlResolver).catch(next);
-				const query = [];
 
-				for (const [key, value] of Object.entries(vector.attributes.dimensions)) {
-					query.push(`dimensions[${key}]=${value}`);
-				}
-
-				const [, originalQuery] = req.originalUrl.split('?');
-
-				if (originalQuery) {
-					query.push(originalQuery);
-				}
-
-				let url = `/indicators/${vector.attributes.indicator}/observations?${query.join('&')}`;
+				let url = `/timeseries/${vector.attributes.timeseries}`;
 				res.redirect(url);
 			});
-	},
+	}
 };

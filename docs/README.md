@@ -469,21 +469,12 @@ GET /legacy/vectors
 [
   {
     "type": "vector",
-    "id": 7,
-    "attributes": {
-      "indicator": {
-        "id": "population",
-        "url": "https://api.statcan.gc.ca/indicators/population"
-      },
-      "dimensions": {
-        "geographicArea": {
-          "@type":"iso-3166-1",
-          "@id":"CA"
-        }
-      }
-    },
+    "id": 1,
     "links": {
-      "self": "https://api.statcan.gc.ca/legacy/vectors/7"
+      "self": "https://api.statcan.gc.ca/timeseries/8336e328-7c42-4d78-a3a1-a96a4c3399af"
+    },
+    "attributes": {
+      "timeseries": "8336e328-7c42-4d78-a3a1-a96a4c3399af"
     }
   }
 ]

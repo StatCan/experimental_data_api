@@ -4,12 +4,11 @@ const jsonapiHelper = require('../../helpers/jsonapi');
 const listQuery = 'SELECT * FROM "vVectors" LIMIT $1 OFFSET $2';
 const countQuery = 'SELECT COUNT(*) FROM "vVectors"';
 const existQuery = 'SELECT COUNT(*) FROM  "vVectors" WHERE id = $1';
-const getQuery = 'SELECT * FROM "vVectors" WHERE id = $1 LIMIT 1';
 
 const vectorIdValidation = /^\d*$/;
 
 function format(vector, urlResolver) {
-	const self = urlResolver.resolve(`/legacy/vectors/${vector.id}`);
+	const self = urlResolver.resolve(`/timeseries/${vector.timeseries}`);
 	return jsonapiHelper.format({
 		type: 'vector',
 		...vector,
@@ -49,13 +48,4 @@ module.exports = {
 			resolve(res.rows[0].count > 0);
 		});
 	},
-	get: async function(id, urlResolver) {
-		const client = new Client();
-		return new Promise(async (resolve, reject) => {
-			await client.connect().catch(reject);
-			const res = await client.query(getQuery, [id]).catch(reject);
-			client.end();
-			resolve(format(res.rows[0], urlResolver));
-		});
-	}
 };
