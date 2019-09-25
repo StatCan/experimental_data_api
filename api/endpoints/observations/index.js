@@ -19,7 +19,7 @@ module.exports = {
 	'/': (route, urlResolver) => {
 		route
 			.get(async (req, res, next) => {
-				let pages = pagination(req);
+				let pages = pagination(req, 10, 1000);
 				let {start, count} = pages.limits;
 
 				const options = {};
