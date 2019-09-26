@@ -1,4 +1,4 @@
-const {Client} = require('pg');
+const {Client} = require('pg').native;
 const jsonapiHelper = require('../../helpers/jsonapi');
 const observations = require('../observations/model');
 

@@ -1,9 +1,16 @@
 FROM node:8-alpine
 
+ENV NPM_CONFIG_PREFIX=/home/node/.npm-global \
+  NODE_PATH=/home/node/.npm-global/lib/node_modules
+
 RUN apk add --update --no-cache \
       ca-certificates \
       git \
-      wget
+      wget \
+      postgresql-dev \
+    && apk add --no-cache --virtual .gyp python make g++ \
+    && npm install -g pg-native --unsafe \
+    && apk del .gyp
 
 USER node
 

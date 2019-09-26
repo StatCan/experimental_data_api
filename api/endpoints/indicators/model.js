@@ -1,4 +1,4 @@
-const {Client} = require('pg');
+const {Client} = require('pg').native;
 const jsonapiHelper = require('../../helpers/jsonapi');
 const jsonStat = require('../../helpers/json-stat');
 const sdmx = require('../../helpers/sdmx');

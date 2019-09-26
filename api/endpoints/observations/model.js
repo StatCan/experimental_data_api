@@ -1,4 +1,4 @@
-const {Client} = require('pg');
+const {Client} = require('pg').native;
 const jsonapiHelper = require('../../helpers/jsonapi');
 
 const listQuery = ['SELECT * FROM "vObservations"', ' ORDER BY period DESC, "dateModified" DESC LIMIT $1 OFFSET $2'];
