@@ -1,12 +1,13 @@
 #!/bin/sh
 if [ "$(psql -At -c 'SELECT COUNT(*) FROM observations')" -eq 0 ]; then
   echo "Loading data" \
-  && ./load-subjects.sh \
-  && ./load-frequencies.sh \
-  && ./load-status.sh \
-  && ./load-dimensions.sh \
-  && time ./load-population-estimates.sh \
-  && time ./load-air-fare.sh \
-  && time ./load-cpi.sh \
+  && psql -q -f ./subjects.sql \
+  && psql -q -f ./frequencies.sql \
+  && psql -q -f ./status.sql \
+  && psql -q -f ./dimensions.sql \
+  && psql -q -f ./types.sql \
+  && psql -q -f ./population_estimates.sql \
+  && psql -q -f ./air_fare.sql \
+  && psql -q -f ./vector_duplicates.sql \
   && echo "Loading complete"
 fi

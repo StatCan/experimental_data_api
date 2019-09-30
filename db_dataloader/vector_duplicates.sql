@@ -1,0 +1,3 @@
+INSERT INTO vectors_duplicate
+VALUES
+(812690, 53508622);
