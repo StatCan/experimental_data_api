@@ -1,0 +1,72 @@
+version: '3.4'
+
+x-env:
+  &env
+  PGHOST: db_test
+  PGDATABASE: statcan_api
+  READONLY_PWD: mypwd
+
+services:
+  db_test:
+    image: postgres:11-alpine
+    environment:
+      POSTGRES_DB: statcan_api
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pwd1234
+    networks:
+      - test
+    ports:
+      - '5432:5432'
+    logging:
+      driver: none
+
+  pg-evolve_test:
+    image: artifactory.cloud.statcan.ca/docker/pg-evolve
+    environment:
+      << : *env
+      PGUSER: postgres
+      PGPASSWORD: pwd1234
+      PGOPTIONS: "-c custom.readonly_pwd=$${READONLY_PWD}"
+    volumes:
+      - ./db:/opt/pg-evolve/evolutions
+    command: ["sh", "-c", "until psql -c '\\q' 2> /dev/null; do sleep 1; done && pg-evolve && tail -f /dev/null"]
+    networks:
+      - test
+
+  db_dataloader_test:
+    image: postgres:11-alpine
+    environment:
+      << : *env
+      PGUSER: postgres
+      PGPASSWORD: pwd1234
+    depends_on:
+      - db_test
+      - pg-evolve_test
+    volumes:
+      - ./test_data:/init
+    working_dir: /init
+    entrypoint: ''
+    command: ['sh', '-c', './wait-for.sh ./load-data.sh && tail -f /dev/null']
+    networks:
+      - test
+
+  test:
+    build:
+      context: ./api
+    image: api_test
+    depends_on:
+      - db_dataloader_test
+    environment:
+      << : *env
+      PGUSER: api
+      PGPASSWORD: "$${READONLY_PWD}"
+      URL_ROOT: http://localhost:8000
+    volumes:
+      - ./api/.eslintrc.json:/home/node/app/.eslintrc.json
+      - ./api/test:/home/node/app/test
+    command: ['sh', '-c', 'node test/_waitFor.js && npm run test-unit']
+    networks:
+      - test
+
+networks:
+  test:

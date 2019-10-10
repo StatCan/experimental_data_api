@@ -19,12 +19,13 @@ lint:
 
 unit:
   stage: test
-  image: node
-  before_script:
-    - cd api
-    - npm install
+  image: docker:stable
+  services:
+  - docker:stable-dind
   script:
-    - npm run test-unit
+    - apk add docker-compose --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted
+    - setup_docker
+    - unit_test
 
 build:
   stage: build
