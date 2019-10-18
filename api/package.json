@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "express-api-server": "git+https://github.com/Statcan/express-api-server.git",
-    "jsonapi-pagination": "git+https://gitlab.k8s.cloud.statcan.ca/laurent.goderre/jsonapi-pagination.git",
+    "jsonapi-pagination": "git+https://github.com/Statcan/jsonapi-pagination.git",
     "pg": "^7.12.1",
     "xml": "^1.0.1"
   },
