@@ -43,7 +43,7 @@ module.exports = {
 			]).catch(reject);
 			client.end();
 			resolve({
-				length: countRes.rows[0].count,
+				length: parseInt(countRes.rows[0].count, 10),
 				list: res.rows.map((o) => {
 					return format(o, urlResolver);
 				})
