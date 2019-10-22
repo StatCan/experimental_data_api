@@ -65,6 +65,7 @@ services:
       - ./api/.eslintrc.json:/home/node/app/.eslintrc.json
       - ./api/test:/home/node/app/test
     command: ['sh', '-c', 'node test/_waitFor.js && npm run test-unit']
+    tty: true
     networks:
       - test
 
