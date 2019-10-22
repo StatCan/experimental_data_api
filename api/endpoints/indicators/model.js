@@ -72,7 +72,7 @@ module.exports = {
 		return observations.list(start, count, urlResolver, {indicator: id, ...options});
 	},
 	listTimeseries: async function(id, start, count, urlResolver = defaultUrlResolver) {
-		return timeseries.list(start, count, urlResolver, {timeseries: id});
+		return timeseries.list(start, count, urlResolver, {indicator: id});
 	},
 	getJsonStat: async function(id, urlResolver = defaultUrlResolver, options) {
 		return new Promise(async (resolve, reject) => {
