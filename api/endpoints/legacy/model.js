@@ -1,5 +1,6 @@
 const {Client} = require('pg').native;
 const jsonapiHelper = require('../../helpers/jsonapi');
+const defaultUrlResolver = require('../../helpers/defaultUrlResolver');
 
 const listQuery = 'SELECT * FROM "vVectors" LIMIT $1 OFFSET $2';
 const countQuery = 'SELECT COUNT(*) FROM "vVectors"';
@@ -19,7 +20,7 @@ function format(vector, urlResolver) {
 }
 
 module.exports = {
-	list: async function(start, count, urlResolver) {
+	list: async function(start, count, urlResolver = defaultUrlResolver) {
 		const client = new Client();
 		return new Promise(async (resolve, reject) => {
 			await client.connect().catch(reject);

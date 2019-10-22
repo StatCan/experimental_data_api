@@ -1,5 +1,6 @@
 const {Client} = require('pg').native;
 const jsonapiHelper = require('../../helpers/jsonapi');
+const defaultUrlResolver = require('../../helpers/defaultUrlResolver');
 const observations = require('../observations/model');
 
 const listQuery = ['SELECT * FROM "vTimeseries"', ' ORDER BY indicator LIMIT $1 OFFSET $2'];
@@ -32,7 +33,7 @@ function getFilters(options) {
 }
 
 module.exports = {
-	list: async function(start, count, urlResolver, options={}) {
+	list: async function(start, count, urlResolver = defaultUrlResolver, options={}) {
 		const client = new Client();
 		const filters = getFilters(options);
 		return new Promise(async (resolve, reject) => {
@@ -62,7 +63,7 @@ module.exports = {
 			resolve(res.rows[0].count > 0);
 		});
 	},
-	get: async function(id, urlResolver) {
+	get: async function(id, urlResolver = defaultUrlResolver) {
 		const client = new Client();
 		return new Promise(async (resolve, reject) => {
 			await client.connect().catch(reject);
@@ -71,7 +72,7 @@ module.exports = {
 			resolve(format(res.rows[0], urlResolver));
 		});
 	},
-	listObservations: async function(id, start, count, urlResolver, options) {
+	listObservations: async function(id, start, count, urlResolver = defaultUrlResolver, options) {
 		return observations.list(start, count, urlResolver, {timeserie: id, ...options});
 	},
 };

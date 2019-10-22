@@ -1,5 +1,6 @@
 const {Client} = require('pg').native;
 const jsonapiHelper = require('../../helpers/jsonapi');
+const defaultUrlResolver = require('../../helpers/defaultUrlResolver');
 
 const listQuery = ['SELECT * FROM "vObservations"', ' ORDER BY period DESC, "dateModified" DESC LIMIT $1 OFFSET $2'];
 const countQuery = 'SELECT COUNT(*) FROM "vObservations"';
@@ -70,7 +71,7 @@ function format(observation, urlResolver) {
 }
 
 module.exports = {
-	list: async function(start, count, urlResolver, options={}) {
+	list: async function(start, count, urlResolver = defaultUrlResolver, options={}) {
 		const client = new Client();
 		const filters = getFilters(options);
 		return new Promise(async (resolve, reject) => {
@@ -100,7 +101,7 @@ module.exports = {
 			resolve(res.rows[0].count > 0);
 		});
 	},
-	get: async function(id, urlResolver) {
+	get: async function(id, urlResolver = defaultUrlResolver) {
 		const client = new Client();
 		return new Promise(async (resolve, reject) => {
 			await client.connect().catch(reject);

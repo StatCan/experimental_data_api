@@ -2,6 +2,7 @@ const {Client} = require('pg').native;
 const jsonapiHelper = require('../../helpers/jsonapi');
 const jsonStat = require('../../helpers/json-stat');
 const sdmx = require('../../helpers/sdmx');
+const defaultUrlResolver = require('../../helpers/defaultUrlResolver');
 const observations = require('../observations/model');
 const timeseries = require('../timeseries/model');
 
@@ -29,7 +30,7 @@ function format(indicator, urlResolver) {
 }
 
 module.exports = {
-	list: async function(start, count, urlResolver) {
+	list: async function(start, count, urlResolver = defaultUrlResolver) {
 		const client = new Client();
 		return new Promise(async (resolve, reject) => {
 			await client.connect().catch(reject);
@@ -58,7 +59,7 @@ module.exports = {
 			resolve(res.rows[0].count > 0);
 		});
 	},
-	get: async function(id, urlResolver) {
+	get: async function(id, urlResolver = defaultUrlResolver) {
 		const client = new Client();
 		return new Promise(async (resolve, reject) => {
 			await client.connect().catch(reject);
@@ -67,13 +68,13 @@ module.exports = {
 			resolve(format(res.rows[0], urlResolver));
 		});
 	},
-	listObservations: async function(id, start, count, urlResolver, options) {
+	listObservations: async function(id, start, count, urlResolver = defaultUrlResolver, options) {
 		return observations.list(start, count, urlResolver, {indicator: id, ...options});
 	},
-	listTimeseries: async function(id, start, count, urlResolver) {
+	listTimeseries: async function(id, start, count, urlResolver = defaultUrlResolver) {
 		return timeseries.list(start, count, urlResolver, {timeseries: id});
 	},
-	getJsonStat: async function(id, urlResolver, options) {
+	getJsonStat: async function(id, urlResolver = defaultUrlResolver, options) {
 		return new Promise(async (resolve, reject) => {
 			let [indicator, {list}] = await Promise.all([
 				this.get(id, urlResolver),
@@ -83,7 +84,7 @@ module.exports = {
 			resolve(jsonStat.convert(id, indicator, list));
 		});
 	},
-	getSDMX: async function(id, urlResolver, options) {
+	getSDMX: async function(id, urlResolver = defaultUrlResolver, options) {
 		const client = new Client();
 		return new Promise(async (resolve, reject) => {
 			let [indicator, {list}, status] = await Promise.all([
