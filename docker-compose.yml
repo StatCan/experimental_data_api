@@ -58,6 +58,8 @@ services:
       URL_ROOT: http://localhost:8000
     ports:
       - '8000:8000'
+      - '9229:9229'
+    command: ['node', '--inspect=0.0.0.0', './index.js']
 
 volumes:
   db-data:
