@@ -221,3 +221,5 @@ INSERT INTO observation_status (observation_value_id, observation_status_id)
 SELECT id, (SELECT id FROM status WHERE name = 'not_available') FROM v;
 
 ---
+
+REFRESH MATERIALIZED VIEW "mvTimeseriesDimensions";
