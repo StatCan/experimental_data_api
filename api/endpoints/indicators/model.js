@@ -74,7 +74,7 @@ module.exports = {
 	listTimeseries: async function(id, start, count, urlResolver = defaultUrlResolver) {
 		return timeseries.list(start, count, urlResolver, {indicator: id});
 	},
-	getJsonStat: async function(id, urlResolver = defaultUrlResolver, options) {
+	getJSONStat: async function(id, urlResolver = defaultUrlResolver, options) {
 		return new Promise(async (resolve, reject) => {
 			let [indicator, {list}] = await Promise.all([
 				this.get(id, urlResolver),

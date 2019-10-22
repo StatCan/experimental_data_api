@@ -96,7 +96,7 @@ module.exports = {
 		route
 			.get(validateIndicatorId)
 			.get(async (req, res, next) => {
-				const jsonStat = await indicators.getJsonStat(req.params.indicator_id, urlResolver, {url: req.path}).catch(next);
+				const jsonStat = await indicators.getJSONStat(req.params.indicator_id, urlResolver, {url: req.path}).catch(next);
 				res.locals.json = jsonStat;
 				next();
 			});

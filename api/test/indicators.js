@@ -313,10 +313,10 @@ describe('Indicators', () => {
 			});
 		});
 
-		describe('`getJsonStat` function', () => {
+		describe('`getJSONStat` function', () => {
 			it.skip('should return a JSONStat object for the indicator', async () => {
 				// return new Promise(async (resolve, reject) => {
-				// 	const jsonstat = await indicators.getJsonStat('indicator1').catch(reject);
+				// 	const jsonstat = await indicators.getJSONStat('indicator1').catch(reject);
 				// 	try {
 				// 		assert.strictEqual();
 				// 		resolve();
