@@ -53,7 +53,7 @@ module.exports.convert = function(id, metadata, data) {
 	}
 
 	const size = Object.values(dimension).slice(1).map((d) => d.category.index.length);
-	const valueNumber = size.reduce((sum, l) => sum *= l);
+	const valueNumber = size.length > 0 ? size.reduce((sum, l) => sum *= l) : 0;
 	const value = new Array(valueNumber);
 	const status = new Array(valueNumber);
 	const jsonStat = {
