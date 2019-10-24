@@ -12,6 +12,8 @@ const timeseriesIdValidation = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0
 
 function format(timeserie, urlResolver) {
 	const self = urlResolver.resolve(`/timeseries/${timeserie.id}`);
+	const indicator = timeserie.indicator;
+	delete timeserie.indicator;
 	return jsonapiHelper.format({
 		type: 'timeseries',
 		...timeserie,
@@ -22,6 +24,15 @@ function format(timeserie, urlResolver) {
 			observations: {
 				links: {
 					self: `${self}/observations`
+				}
+			},
+			indicator: {
+				links: {
+					self: urlResolver.resolve(`/indicators/${indicator}`)
+				},
+				data: {
+					type: 'indicator',
+					id: indicator
 				}
 			}
 		}

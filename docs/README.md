@@ -121,11 +121,6 @@ GET /indicators/:indicator/observations
     "type": "observation",
     "id": "f7e24559-8e5e-463b-a521-d9bdaca2d03c",
     "attributes": {
-      "indicator": {
-        "id": "death",
-        "url": "https://api.statcan.gc.ca/indicators/death"
-      },
-      "timeseries": "648fbd4a-64b0-449d-83d9-539cfa4b83e5",
       "period": "2018-01-01",
       "dimensions": {
         "geographicArea": {
@@ -148,6 +143,24 @@ GET /indicators/:indicator/observations
       "notes": {
         "links": {
           "self": "https://api.statcan.gc.ca/observations/79687078/notes"
+        }
+      },
+      "indicator": {
+        "links": {
+          "self": "https://api.statcan.gc.ca/indicators/death"
+        },
+        "data": {
+          "type": "indicator",
+          "id": "death"
+        }
+      },
+      "timeseries": {
+        "links": {
+          "self": "https://api.statcan.gc.ca/timeseries/648fbd4a-64b0-449d-83d9-539cfa4b83e5"
+        },
+        "data": {
+          "type": "timeseries",
+          "id": "648fbd4a-64b0-449d-83d9-539cfa4b83e5"
         }
       }
     }
@@ -180,11 +193,6 @@ GET /observations
     "type": "observation",
     "id": "f7e24559-8e5e-463b-a521-d9bdaca2d03c",
     "attributes": {
-      "indicator": {
-        "id": "death",
-        "url": "https://api.statcan.gc.ca/indicators/death"
-      },
-      "timeseries": "648fbd4a-64b0-449d-83d9-539cfa4b83e5",
       "period": "2018-01-01",
       "dimensions": {
         "geographicArea": {
@@ -207,6 +215,24 @@ GET /observations
       "notes": {
         "links": {
           "self": "https://api.statcan.gc.ca/observations/79687078/notes"
+        }
+      },
+      "indicator": {
+        "links": {
+          "self": "https://api.statcan.gc.ca/indicators/death"
+        },
+        "data": {
+          "type": "indicator",
+          "id": "death"
+        }
+      },
+      "timeseries": {
+        "links": {
+          "self": "https://api.statcan.gc.ca/timeseries/648fbd4a-64b0-449d-83d9-539cfa4b83e5"
+        },
+        "data": {
+          "type": "timeseries",
+          "id": "648fbd4a-64b0-449d-83d9-539cfa4b83e5"
         }
       }
     }
@@ -241,11 +267,6 @@ GET /observations/:observation_id
   "type": "observation",
   "id": "f7e24559-8e5e-463b-a521-d9bdaca2d03c",
   "attributes": {
-    "indicator": {
-      "id": "death",
-      "url": "https://api.statcan.gc.ca/indicators/death"
-    },
-    "timeseries": "648fbd4a-64b0-449d-83d9-539cfa4b83e5",
     "period": "2018-01-01",
     "dimensions": {
       "geographicArea": {
@@ -269,6 +290,24 @@ GET /observations/:observation_id
       "links": {
         "self": "https://api.statcan.gc.ca/observations/79687078/notes"
       }
+    },
+    "indicator": {
+      "links": {
+        "self": "https://api.statcan.gc.ca/indicators/death"
+      },
+      "data": {
+        "type": "indicator",
+        "id": "death"
+      }
+    },
+    "timeseries": {
+      "links": {
+        "self": "https://api.statcan.gc.ca/timeseries/648fbd4a-64b0-449d-83d9-539cfa4b83e5"
+      },
+      "data": {
+        "type": "timeseries",
+        "id": "648fbd4a-64b0-449d-83d9-539cfa4b83e5"
+      }
     }
   }
 }
@@ -290,7 +329,6 @@ GET /timeseries
     "type": "timeseries",
     "id": "648fbd4a-64b0-449d-83d9-539cfa4b83e5",
     "attributes": {
-      "indicator": "births",
       "dimensions": {
         "geographicArea": "10"
       }
@@ -302,6 +340,11 @@ GET /timeseries
       "observations": {
         "links": {
           "self": "https://api.statcan.gc.ca/timeseries/648fbd4a-64b0-449d-83d9-539cfa4b83e5/observations"
+        }
+      },
+      "indicator": {
+        "links": {
+          "self": "https://api.statcan.gc.ca/indicator/births"
         }
       }
     }
@@ -322,7 +365,6 @@ GET /timeserie/:timeserie
   "type": "timeseries",
   "id": "648fbd4a-64b0-449d-83d9-539cfa4b83e5",
   "attributes": {
-    "indicator": "births",
     "dimensions": {
       "geographicArea": "10"
     }
@@ -334,6 +376,11 @@ GET /timeserie/:timeserie
     "observations": {
       "links": {
         "self": "https://api.statcan.gc.ca/timeseries/648fbd4a-64b0-449d-83d9-539cfa4b83e5/observations"
+      }
+    },
+    "indicator": {
+      "links": {
+        "self": "https://api.statcan.gc.ca/indicator/births"
       }
     }
   }
@@ -361,11 +408,6 @@ GET /timeseries/:timeseries/observations
     "type": "observation",
     "id": "f7e24559-8e5e-463b-a521-d9bdaca2d03c",
     "attributes": {
-      "indicator": {
-        "id": "death",
-        "url": "https://api.statcan.gc.ca/indicators/death"
-      },
-      "timeseries": "648fbd4a-64b0-449d-83d9-539cfa4b83e5",
       "period": "2018-01-01",
       "dimensions": {
         "geographicArea": {
@@ -388,6 +430,24 @@ GET /timeseries/:timeseries/observations
       "notes": {
         "links": {
           "self": "https://api.statcan.gc.ca/observations/79687078/notes"
+        }
+      },
+      "indicator": {
+        "links": {
+          "self": "https://api.statcan.gc.ca/indicators/death"
+        },
+        "data": {
+          "type": "indicator",
+          "id": "death"
+        }
+      },
+      "timeseries": {
+        "links": {
+          "self": "https://api.statcan.gc.ca/timeseries/648fbd4a-64b0-449d-83d9-539cfa4b83e5"
+        },
+        "data": {
+          "type": "timeseries",
+          "id": "648fbd4a-64b0-449d-83d9-539cfa4b83e5"
         }
       }
     }

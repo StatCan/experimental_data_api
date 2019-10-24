@@ -57,6 +57,10 @@ function getFilters(options) {
 
 function format(observation, urlResolver) {
 	const self = urlResolver.resolve(`/observations/${observation.id}`);
+	const indicator = observation.indicator;
+	const timeseries = observation.timeseries;
+	delete observation.indicator;
+	delete observation.timeseries;
 	const newObject = {
 		type: 'observation',
 		...observation,
@@ -72,6 +76,24 @@ function format(observation, urlResolver) {
 			notes: {
 				links: {
 					self: urlResolver.resolve(`${self}/notes`)
+				}
+			},
+			indicator: {
+				links: {
+					self: urlResolver.resolve(`/indicators/${indicator}`)
+				},
+				data: {
+					type: 'indicator',
+					id: indicator
+				}
+			},
+			timeseries: {
+				links: {
+					self: urlResolver.resolve(`/timeseries/${timeseries}`)
+				},
+				data: {
+					type: 'timeseries',
+					id: timeseries
 				}
 			}
 		}
