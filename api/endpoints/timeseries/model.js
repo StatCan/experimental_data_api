@@ -17,7 +17,13 @@ function format(timeserie, urlResolver) {
 		...timeserie,
 		links: {
 			self,
-			'observations': `${self}/observations`
+		},
+		relationships: {
+			observations: {
+				links: {
+					self: `${self}/observations`
+				}
+			}
 		}
 	});
 }

@@ -22,9 +22,19 @@ function format(indicator, urlResolver) {
 		links: {
 			self,
 			'json-stat': `${self}/json-stat`,
-			'sdmx': `${self}/sdmx`,
-			'observations': `${self}/observations`,
-			'timeseries': `${self}/timeseries`,
+			'sdmx': `${self}/sdmx`
+		},
+		relationships: {
+			observations: {
+				links: {
+					self: `${self}/observations`
+				}
+			},
+			timeseries: {
+				links: {
+					self: `${self}/timeseries`
+				}
+			},
 		}
 	});
 }

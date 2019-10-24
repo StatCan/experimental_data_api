@@ -62,8 +62,18 @@ function format(observation, urlResolver) {
 		...observation,
 		links: {
 			self,
-			revisions: urlResolver.resolve(`${self}/revisions`),
-			notes: urlResolver.resolve(`${self}/notes`)
+		},
+		relationships: {
+			revisions: {
+				links: {
+					self: urlResolver.resolve(`${self}/revisions`)
+				}
+			},
+			notes: {
+				links: {
+					self: urlResolver.resolve(`${self}/notes`)
+				}
+			}
 		}
 	};
 	newObject.period = newObject.period.toLocaleDateString(undefined, dateFormat);

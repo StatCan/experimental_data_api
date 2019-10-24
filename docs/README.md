@@ -40,8 +40,18 @@ GET /indicators
     },
     "links": {
       "self": "https://api.statcan.gc.ca/indicators/death",
-      "observations": "https://api.statcan.gc.ca/indicators/death/observations",
-      "timeseries": "https://api.statcan.gc.ca/indicators/death/timeseries"
+    },
+    "relationships": {
+      "observations": {
+        "links": {
+          "self": "https://api.statcan.gc.ca/indicators/death/observations"
+        }
+      },
+      "timeseries": {
+        "links": {
+          "self": "https://api.statcan.gc.ca/indicators/death/timeseries"
+        }
+      }
     }
   }
 ]
@@ -74,8 +84,18 @@ GET /indicators/:indicator
   },
   "links": {
     "self": "https://api.statcan.gc.ca/indicators/death",
-    "observations": "https://api.statcan.gc.ca/indicators/death/observations",
-    "timeseries": "https://api.statcan.gc.ca/indicators/death/timeseries"
+  },
+  "relationships": {
+    "observations": {
+      "links": {
+        "self": "https://api.statcan.gc.ca/indicators/death/observations"
+      }
+    },
+    "timeseries": {
+      "links": {
+        "self": "https://api.statcan.gc.ca/indicators/death/timeseries"
+      }
+    }
   }
 }
 ```
@@ -117,9 +137,19 @@ GET /indicators/:indicator/observations
       "dateModified": "2018-06-14"
     },
     "links": {
-      "self": "https://api.statcan.gc.ca/observations/79687078",
-      "revisions": "https://api.statcan.gc.ca/observations/79687078/revisions",
-      "notes": "https://api.statcan.gc.ca/observations/79687078/notes"
+      "self": "https://api.statcan.gc.ca/observations/79687078"
+    },
+    "relationships": {
+      "revisions": {
+        "links": {
+          "self": "https://api.statcan.gc.ca/observations/79687078/revisions"
+        }
+      },
+      "notes": {
+        "links": {
+          "self": "https://api.statcan.gc.ca/observations/79687078/notes"
+        }
+      }
     }
   }
 ]
@@ -166,9 +196,19 @@ GET /observations
       "dateModified": "2018-06-14"
     },
     "links": {
-      "self": "https://api.statcan.gc.ca/observations/79687078",
-      "revisions": "https://api.statcan.gc.ca/observations/79687078/revisions",
-      "notes": "https://api.statcan.gc.ca/observations/79687078/notes"
+      "self": "https://api.statcan.gc.ca/observations/79687078"
+    },
+    "relationships": {
+      "revisions": {
+        "links": {
+          "self": "https://api.statcan.gc.ca/observations/79687078/revisions"
+        }
+      },
+      "notes": {
+        "links": {
+          "self": "https://api.statcan.gc.ca/observations/79687078/notes"
+        }
+      }
     }
   }
 ]
@@ -217,9 +257,19 @@ GET /observations/:observation_id
     "dateModified": "2018-06-14"
   },
   "links": {
-    "self": "https://api.statcan.gc.ca/observations/79687078",
-    "revisions": "https://api.statcan.gc.ca/observations/79687078/revisions",
-    "notes": "https://api.statcan.gc.ca/observations/79687078/notes"
+    "self": "https://api.statcan.gc.ca/observations/79687078"
+  },
+  "relationships": {
+    "revisions": {
+      "links": {
+        "self": "https://api.statcan.gc.ca/observations/79687078/revisions"
+      }
+    },
+    "notes": {
+      "links": {
+        "self": "https://api.statcan.gc.ca/observations/79687078/notes"
+      }
+    }
   }
 }
 ```
@@ -246,8 +296,14 @@ GET /timeseries
       }
     },
     "links": {
-      "self": "https://api.statcan.gc.ca/timeseries/648fbd4a-64b0-449d-83d9-539cfa4b83e5",
-      "observations": "https://api.statcan.gc.ca/timeseries/648fbd4a-64b0-449d-83d9-539cfa4b83e5/observations"
+      "self": "https://api.statcan.gc.ca/timeseries/648fbd4a-64b0-449d-83d9-539cfa4b83e5"
+    },
+    "relationships": {
+      "observations": {
+        "links": {
+          "self": "https://api.statcan.gc.ca/timeseries/648fbd4a-64b0-449d-83d9-539cfa4b83e5/observations"
+        }
+      }
     }
   }
 ]
@@ -272,8 +328,14 @@ GET /timeserie/:timeserie
     }
   },
   "links": {
-    "self": "https://api.statcan.gc.ca/timeseries/648fbd4a-64b0-449d-83d9-539cfa4b83e5",
-    "observations": "https://api.statcan.gc.ca/timeseries/648fbd4a-64b0-449d-83d9-539cfa4b83e5/observations"
+    "self": "https://api.statcan.gc.ca/timeseries/648fbd4a-64b0-449d-83d9-539cfa4b83e5"
+  },
+  "relationships": {
+    "observations": {
+      "links": {
+        "self": "https://api.statcan.gc.ca/timeseries/648fbd4a-64b0-449d-83d9-539cfa4b83e5/observations"
+      }
+    }
   }
 }
 ```
@@ -315,9 +377,19 @@ GET /timeseries/:timeseries/observations
       "dateModified": "2018-06-14"
     },
     "links": {
-      "self": "https://api.statcan.gc.ca/observations/79687078",
-      "revisions": "https://api.statcan.gc.ca/observations/79687078/revisions",
-      "notes": "https://api.statcan.gc.ca/observations/79687078/notes"
+      "self": "https://api.statcan.gc.ca/observations/79687078"
+    },
+    "relationships": {
+      "revisions": {
+        "links": {
+          "self": "https://api.statcan.gc.ca/observations/79687078/revisions"
+        }
+      },
+      "notes": {
+        "links": {
+          "self": "https://api.statcan.gc.ca/observations/79687078/notes"
+        }
+      }
     }
   }
 ]
