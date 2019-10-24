@@ -145,7 +145,7 @@ describe('Indicators', () => {
 					const observationsList = await indicators.listObservations(indicator, 0, 10).catch(reject);
 					try {
 						assert.strictEqual(observationsList.length, 7);
-						for (const {type, attributes: {indicator: observationIndicator}} of observationsList.list) {
+						for (const {type, relationships: {indicator: {data: {id: observationIndicator}}}} of observationsList.list) {
 							assert.strictEqual(type, 'observation');
 							assert.strictEqual(indicator, observationIndicator);
 						}
@@ -245,7 +245,7 @@ describe('Indicators', () => {
 					const timeseriesList = await indicators.listTimeseries(indicator, 0, 10).catch(reject);
 					try {
 						assert.strictEqual(timeseriesList.length, 2);
-						for (const {type, attributes: {indicator: observationIndicator}} of timeseriesList.list) {
+						for (const {type, relationships: {indicator: {data: {id: observationIndicator}}}} of timeseriesList.list) {
 							assert.strictEqual(type, 'timeseries');
 							assert.strictEqual(indicator, observationIndicator);
 						}
