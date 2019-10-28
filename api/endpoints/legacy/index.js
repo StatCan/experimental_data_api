@@ -17,40 +17,52 @@ module.exports = {
 	'/': (route, urlResolver) => {
 		route
 			.get(async (req, res, next) => {
-				res.locals.json = {
-					id: 'vectors',
-					type: 'legacyEndpoint',
-					links: {
-						self: urlResolver.resolve('/legacy/vectors')
-					}
-				};
-				next();
+				try {
+					res.locals.json = {
+						id: 'vectors',
+						type: 'legacyEndpoint',
+						links: {
+							self: urlResolver.resolve('/legacy/vectors')
+						}
+					};
+					next();
+				} catch (err) {
+					next(err);
+				}
 			});
 	},
 
 	'/vectors': (route, urlResolver) => {
 		route
 			.get(async (req, res, next) => {
-				let pages = pagination(req);
-				let {start, count} = pages.limits;
-				let {length, list} = await vectors.list(start, count, urlResolver).catch(next);
-				let links = paginationHelper.getLinks(pages, length, urlResolver);
+				try {
+					let pages = pagination(req);
+					let {start, count} = pages.limits;
+					let {length, list} = await vectors.list(start, count, urlResolver).catch(next);
+					let links = paginationHelper.getLinks(pages, length, urlResolver);
 
-				res.locals.json = {
-					links,
-					data: list
-				};
-				next();
+					res.locals.json = {
+						links,
+						data: list
+					};
+					next();
+				} catch (err) {
+					next(err);
+				}
 			});
 	},
 	'/vectors/:vector_id': (route, urlResolver) => {
 		route
 			.get(validateVectorId)
 			.get(async (req, res, next) => {
-				const vector = await vectors.get(req.params.vector_id, urlResolver).catch(next);
+				try {
+					const vector = await vectors.get(req.params.vector_id, urlResolver).catch(next);
 
-				let url = `/timeseries/${vector.attributes.timeseries}`;
-				res.redirect(url);
+					let url = `/timeseries/${vector.attributes.timeseries}`;
+					res.redirect(url);
+				} catch (err) {
+					next(err);
+				}
 			});
 	}
 };
