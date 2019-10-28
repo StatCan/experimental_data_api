@@ -151,10 +151,10 @@ INSERT INTO timeseries_dimension_sex (timeseries_id, value_id)
 VALUES ('e6c20549-b6a6-4107-8bfe-6f67f962d65a', (SELECT id FROM type_sex WHERE name = 'female'));
 
 INSERT INTO timeseries_dimension_sex (timeseries_id, value_id)
-VALUES ('699b644d-dd26-430d-9f56-b4fc6760569c', (SELECT id FROM type_sex WHERE name = 'male'));
+VALUES ('699b644d-dd26-430d-9f56-b4fc6760569c', (SELECT id FROM type_sex WHERE name = 'female'));
 
 INSERT INTO timeseries_dimension_sex (timeseries_id, value_id)
-VALUES ('ac139d12-22ce-45ba-a63e-14f1dc9f3ec4', (SELECT id FROM type_sex WHERE name = 'female'));
+VALUES ('ac139d12-22ce-45ba-a63e-14f1dc9f3ec4', (SELECT id FROM type_sex WHERE name = 'male'));
 
 WITH o AS (
   INSERT INTO observations (period, timeseries_id)
