@@ -1,1 +1,2 @@
 require('./indicators');
+require('./legacy');
