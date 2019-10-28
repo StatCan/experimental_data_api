@@ -90,6 +90,6 @@ module.exports = {
 		});
 	},
 	listObservations: async function(id, start, count, urlResolver = defaultUrlResolver, options) {
-		return observations.list(start, count, urlResolver, {timeserie: id, ...options});
+		return observations.list(start, count, urlResolver, {timeseries: id, ...options});
 	},
 };
