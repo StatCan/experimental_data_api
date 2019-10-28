@@ -5,6 +5,7 @@ const defaultUrlResolver = require('../../helpers/defaultUrlResolver');
 const listQuery = 'SELECT * FROM "vVectors" LIMIT $1 OFFSET $2';
 const countQuery = 'SELECT COUNT(*) FROM "vVectors"';
 const existQuery = 'SELECT COUNT(*) FROM  "vVectors" WHERE id = $1';
+const getTimeseriesQuery = 'SELECT timeseries FROM "vVectors" WHERE id = $1 LIMIT 1';
 
 const vectorIdValidation = /^\d*$/;
 
@@ -49,4 +50,13 @@ module.exports = {
 			resolve(res.rows[0].count > 0);
 		});
 	},
+	getTimeseries: async function(id, urlResolver) {
+		const client = new Client();
+		return new Promise(async (resolve, reject) => {
+			await client.connect().catch(reject);
+			const res = await client.query(getTimeseriesQuery, [id]).catch(reject);
+			client.end();
+			resolve(res.rowCount > 0 ? res.rows[0].timeseries : undefined);
+		});
+	}
 };

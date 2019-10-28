@@ -56,10 +56,8 @@ module.exports = {
 			.get(validateVectorId)
 			.get(async (req, res, next) => {
 				try {
-					const vector = await vectors.get(req.params.vector_id, urlResolver).catch(next);
-
-					let url = `/timeseries/${vector.attributes.timeseries}`;
-					res.redirect(url);
+					const timeseries = await vectors.getTimeseries(req.params.vector_id, urlResolver).catch(next);
+					res.redirect(`/timeseries/${timeseries}`);
 				} catch (err) {
 					next(err);
 				}
