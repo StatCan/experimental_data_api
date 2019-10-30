@@ -36,9 +36,10 @@ describe('Indicators', () => {
 
 			it('should offset the list by the `start` argument', async () => {
 				return new Promise(async (resolve, reject) => {
-					const list = await indicators.list(1, 10).catch(reject);
+					const start0 = await indicators.list(0, 10).catch(reject);
+					const start1 = await indicators.list(1, 10).catch(reject);
 					try {
-						assert.strictEqual(list.list[0].id, 'indicator2');
+						assert.strictEqual(start1.list[0].id, start0.list[1].id);
 						resolve();
 					} catch (e) {
 						reject(e);
@@ -144,7 +145,7 @@ describe('Indicators', () => {
 					const indicator = 'indicator1';
 					const observationsList = await indicators.listObservations(indicator, 0, 10).catch(reject);
 					try {
-						assert.strictEqual(observationsList.length, 7);
+						assert.strictEqual(observationsList.length, 5);
 						for (const {type, relationships: {indicator: {data: {id: observationIndicator}}}} of observationsList.list) {
 							assert.strictEqual(type, 'observation');
 							assert.strictEqual(indicator, observationIndicator);

@@ -156,6 +156,8 @@ VALUES ('699b644d-dd26-430d-9f56-b4fc6760569c', (SELECT id FROM type_sex WHERE n
 INSERT INTO timeseries_dimension_sex (timeseries_id, value_id)
 VALUES ('ac139d12-22ce-45ba-a63e-14f1dc9f3ec4', (SELECT id FROM type_sex WHERE name = 'male'));
 
+REFRESH MATERIALIZED VIEW "mvTimeseriesDimensions";
+
 WITH o AS (
   INSERT INTO observations (period, timeseries_id)
   VALUES ('2019-01-01', 'd3a06c6b-82a7-4efa-8f0f-6cb453deff2c')
@@ -171,24 +173,6 @@ WITH o AS (
 )
 INSERT INTO observation_values (observation_id, value)
 SELECT id, 35 FROM o;
-
----
-
-WITH o AS (
-  INSERT INTO observations (period, timeseries_id)
-  VALUES ('2019-01-01', '3d9e3917-8a39-4eb6-917c-bf485dd0b20b')
-  RETURNING id
-)
-INSERT INTO observation_values (observation_id, value)
-SELECT id, 2.5 FROM o;
-
-WITH o AS (
-  INSERT INTO observations (period, timeseries_id)
-  VALUES ('2019-02-01', '3d9e3917-8a39-4eb6-917c-bf485dd0b20b')
-  RETURNING id
-)
-INSERT INTO observation_values (observation_id, value)
-SELECT id, 2.9 FROM o;
 
 ---
 
@@ -222,4 +206,75 @@ SELECT id, (SELECT id FROM status WHERE name = 'not_available') FROM v;
 
 ---
 
-REFRESH MATERIALIZED VIEW "mvTimeseriesDimensions";
+WITH o AS (
+  INSERT INTO observations (period, timeseries_id)
+  VALUES ('2019-01-01', 'e052c4b3-ae8b-43ca-a6f7-ff75fcfc49c5')
+  RETURNING id
+)
+INSERT INTO observation_values (observation_id, value)
+SELECT id, 234.3 FROM o;
+
+WITH o AS (
+  INSERT INTO observations (period, timeseries_id)
+  VALUES ('2019-02-01', 'e052c4b3-ae8b-43ca-a6f7-ff75fcfc49c5')
+  RETURNING id
+)
+INSERT INTO observation_values (observation_id, value)
+SELECT id, 240.8 FROM o;
+
+---
+
+WITH o AS (
+  INSERT INTO observations (period, timeseries_id)
+  VALUES ('2019-01-01', 'e6c20549-b6a6-4107-8bfe-6f67f962d65a')
+  RETURNING id
+)
+INSERT INTO observation_values (observation_id, value)
+SELECT id, 256 FROM o;
+
+WITH o AS (
+  INSERT INTO observations (period, timeseries_id)
+  VALUES ('2019-02-01', 'e6c20549-b6a6-4107-8bfe-6f67f962d65a')
+  RETURNING id
+)
+INSERT INTO observation_values (observation_id, value)
+SELECT id, 270 FROM o;
+
+---
+
+WITH o AS (
+  INSERT INTO observations (period, timeseries_id)
+  VALUES ('2019-01-01', '699b644d-dd26-430d-9f56-b4fc6760569c')
+  RETURNING id
+)
+INSERT INTO observation_values (observation_id, value)
+SELECT id, 120.5 FROM o;
+
+WITH o AS (
+  INSERT INTO observations (period, timeseries_id)
+  VALUES ('2019-02-01', '699b644d-dd26-430d-9f56-b4fc6760569c')
+  RETURNING id
+)
+INSERT INTO observation_values (observation_id, value)
+SELECT id, 140.2 FROM o;
+
+---
+
+
+WITH o AS (
+  INSERT INTO observations (period, timeseries_id)
+  VALUES ('2019-01-01', 'ac139d12-22ce-45ba-a63e-14f1dc9f3ec4')
+  RETURNING id
+)
+INSERT INTO observation_values (observation_id, value)
+SELECT id, 45.2 FROM o;
+
+WITH o AS (
+  INSERT INTO observations (period, timeseries_id)
+  VALUES ('2019-02-01', 'ac139d12-22ce-45ba-a63e-14f1dc9f3ec4')
+  RETURNING id
+)
+INSERT INTO observation_values (observation_id, value)
+SELECT id, 19.9 FROM o;
+
+---
