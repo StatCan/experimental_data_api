@@ -139,7 +139,7 @@ module.exports = {
 			await client.connect().catch(reject);
 			const res = await client.query(getQuery, [id]).catch(reject);
 			client.end();
-			resolve(format(res.rows[0], urlResolver));
+			resolve(res.rowCount > 0 ? format(res.rows[0], urlResolver) : undefined);
 		});
 	}
 };
