@@ -159,8 +159,8 @@ VALUES ('ac139d12-22ce-45ba-a63e-14f1dc9f3ec4', (SELECT id FROM type_sex WHERE n
 REFRESH MATERIALIZED VIEW "mvTimeseriesDimensions";
 
 WITH o AS (
-  INSERT INTO observations (period, timeseries_id)
-  VALUES ('2019-01-01', 'd3a06c6b-82a7-4efa-8f0f-6cb453deff2c')
+  INSERT INTO observations (id, period, timeseries_id)
+  VALUES ('41f7ef3e-2dd1-4864-ac77-5daa4c13f04f', '2019-01-01', 'd3a06c6b-82a7-4efa-8f0f-6cb453deff2c')
   RETURNING id
 )
 INSERT INTO observation_values (observation_id, value)
