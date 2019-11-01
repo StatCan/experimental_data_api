@@ -55,17 +55,22 @@ module.exports = {
 		const filters = getFilters(options);
 		return new Promise(async (resolve, reject) => {
 			await client.connect().catch(reject);
-			const [res, countRes] = await Promise.all([
-				client.query(listQuery[0] + filters + listQuery[1], [count, start]),
-				client.query(countQuery + filters)
-			]).catch(reject);
-			client.end();
-			resolve({
-				length: parseInt(countRes.rows[0].count, 10),
-				list: res.rows.map((o) => {
-					return format(o, urlResolver);
-				})
-			});
+			try {
+				const [res, countRes] = await Promise.all([
+					client.query(listQuery[0] + filters + listQuery[1], [count, start]),
+					client.query(countQuery + filters)
+				]).catch(reject);
+				resolve({
+					length: parseInt(countRes.rows[0].count, 10),
+					list: res.rows.map((o) => {
+						return format(o, urlResolver);
+					})
+				});
+			} catch (e) {
+				reject(e);
+			} finally {
+				client.end();
+			}
 		});
 	},
 	isValid: function(id) {

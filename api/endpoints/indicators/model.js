@@ -1,4 +1,4 @@
-const {Client} = require('pg').native;
+const client = require('../../helpers/pg-client');
 const jsonapiHelper = require('../../helpers/jsonapi');
 const jsonStat = require('../../helpers/json-stat');
 const sdmx = require('../../helpers/sdmx');
@@ -41,41 +41,44 @@ function format(indicator, urlResolver) {
 
 module.exports = {
 	list: async function(start, count, urlResolver = defaultUrlResolver) {
-		const client = new Client();
 		return new Promise(async (resolve, reject) => {
-			await client.connect().catch(reject);
-			const [res, countRes] = await Promise.all([
-				client.query(listQuery, [count, start]),
-				client.query(countQuery)
-			]).catch(reject);
-			client.end();
-			resolve({
-				length: parseInt(countRes.rows[0].count, 10),
-				list: res.rows.map((o) => {
-					return format(o, urlResolver);
-				})
-			});
+			try {
+				const [res, countRes] = await client.query(
+					[listQuery, count, start],
+					countQuery
+				);
+				resolve({
+					length: parseInt(countRes.rows[0].count, 10),
+					list: res.rows.map((o) => {
+						return format(o, urlResolver);
+					})
+				});
+			} catch (e) {
+				reject(e);
+			}
 		});
 	},
 	isValid: function(id) {
 		return indicatorIdValidation.test(id);
 	},
 	exists: async function(id) {
-		const client = new Client();
 		return new Promise(async (resolve, reject) => {
-			await client.connect().catch(reject);
-			const res = await client.query(existQuery, [id]).catch(reject);
-			client.end();
-			resolve(res.rows[0].count > 0);
+			try {
+				const res = await client.query([existQuery, id]);
+				resolve(res.rows[0].count > 0);
+			} catch (e) {
+				reject(e);
+			}
 		});
 	},
 	get: async function(id, urlResolver = defaultUrlResolver) {
-		const client = new Client();
 		return new Promise(async (resolve, reject) => {
-			await client.connect().catch(reject);
-			const res = await client.query(getQuery, [id]).catch(reject);
-			client.end();
-			resolve(res.rowCount > 0 ? format(res.rows[0], urlResolver) : undefined);
+			try {
+				const res = await client.query([getQuery, id]);
+				resolve(res.rowCount > 0 ? format(res.rows[0], urlResolver) : undefined);
+			} catch (e) {
+				reject(e);
+			}
 		});
 	},
 	listObservations: async function(id, start, count, urlResolver = defaultUrlResolver, options) {
@@ -95,15 +98,12 @@ module.exports = {
 		});
 	},
 	getSDMX: async function(id, urlResolver = defaultUrlResolver, options) {
-		const client = new Client();
 		return new Promise(async (resolve, reject) => {
 			let [indicator, {list}, status] = await Promise.all([
 				this.get(id, urlResolver),
 				observations.list(0, null, urlResolver, {indicator: id}),
 				new Promise(async (resolve, reject) => {
-					await client.connect().catch(reject);
 					const res = await client.query(getStatus).catch(reject);
-					client.end();
 					resolve(res.rows[0].status);
 				})
 			]).catch(reject);

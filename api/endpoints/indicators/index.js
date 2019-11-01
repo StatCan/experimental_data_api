@@ -25,7 +25,7 @@ module.exports = {
 				try {
 					let pages = pagination(req);
 					let {start, count} = pages.limits;
-					let {length, list} = await indicators.list(start, count, urlResolver).catch(next);
+					let {length, list} = await indicators.list(start, count, urlResolver);
 					let links = paginationHelper.getLinks(pages, length, urlResolver);
 
 					res.locals.json = {
@@ -43,7 +43,7 @@ module.exports = {
 			.get(validateIndicatorId)
 			.get(async (req, res, next) => {
 				try {
-					const indicator = await indicators.get(req.params.indicator_id, urlResolver).catch(next);
+					const indicator = await indicators.get(req.params.indicator_id, urlResolver);
 					res.locals.json = {
 						data: indicator
 					};
@@ -78,7 +78,7 @@ module.exports = {
 						}
 					}
 
-					let {length, list} = await indicators.listObservations(req.params.indicator_id, start, count, urlResolver, options).catch(next);
+					let {length, list} = await indicators.listObservations(req.params.indicator_id, start, count, urlResolver, options);
 					let links = paginationHelper.getLinks(pages, length, urlResolver);
 
 					res.locals.json = {
@@ -99,7 +99,7 @@ module.exports = {
 					let pages = pagination(req);
 					let {start, count} = pages.limits;
 
-					let {length, list} = await indicators.listTimeseries(req.params.indicator_id, start, count, urlResolver).catch(next);
+					let {length, list} = await indicators.listTimeseries(req.params.indicator_id, start, count, urlResolver);
 					let links = paginationHelper.getLinks(pages, length, urlResolver);
 
 					res.locals.json = {
@@ -117,7 +117,7 @@ module.exports = {
 			.get(validateIndicatorId)
 			.get(async (req, res, next) => {
 				try {
-					const jsonStat = await indicators.getJSONStat(req.params.indicator_id, urlResolver, {url: req.path}).catch(next);
+					const jsonStat = await indicators.getJSONStat(req.params.indicator_id, urlResolver, {url: req.path});
 					res.locals.json = jsonStat;
 					next();
 				} catch (err) {
@@ -130,7 +130,7 @@ module.exports = {
 			.get(validateIndicatorId)
 			.get(async (req, res, next) => {
 				try {
-					const sdmx = await indicators.getSDMX(req.params.indicator_id, urlResolver, {url: req.path}).catch(next);
+					const sdmx = await indicators.getSDMX(req.params.indicator_id, urlResolver, {url: req.path});
 					res.set('Content-Type', 'application/vnd.sdmx.genericdata+xml;version=2.1');
 					res.send(sdmx);
 					res.end();
