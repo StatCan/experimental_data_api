@@ -2,6 +2,8 @@ const rangeRegExp = /^(\d{4}-\d{2}(?:-\d{2})?)?\/(\d{4}-\d{2}(?:-\d{2})?)?$/;
 const dimensionNameRegExp = /^[aA-zZ0-9\-_]*$/;
 const dimensionsValueRegexp = dimensionNameRegExp;
 
+class ParsingError extends Error {}
+
 module.exports.parsePeriod = function(period) {
 	const rtn = {};
 
@@ -19,7 +21,7 @@ module.exports.parsePeriod = function(period) {
 			if (end)
 				rtn.end = new Date(end);
 		} catch (e) {
-			throw new Error('Parameter period is invalid. Period has to be formatted either as \'period=YYYY-MM-DD/YYYY-MM-DD\' or \'period[start]=YYYY-MM-DD&period[end]=YYYY-MM-DD\'');
+			throw new ParsingError('Parameter period is invalid. Period has to be formatted either as \'period=YYYY-MM-DD/YYYY-MM-DD\' or \'period[start]=YYYY-MM-DD&period[end]=YYYY-MM-DD\'');
 		}
 	} else if (typeof period === 'object') {
 		let date;
@@ -27,7 +29,7 @@ module.exports.parsePeriod = function(period) {
 			date = new Date(Array.isArray(period.start) ? period.start[0] : period.start);
 
 			if (isNaN(date))
-				throw new Error('Parameter period[start] is invalid. Expecting date in ISO 8601 format (YYYY-MM-DD)');
+				throw new ParsingError('Parameter period[start] is invalid. Expecting date in ISO 8601 format (YYYY-MM-DD)');
 
 			rtn.start = date;
 		}
@@ -36,7 +38,7 @@ module.exports.parsePeriod = function(period) {
 			date = new Date(Array.isArray(period.end) ? period.end[0] : period.end);
 
 			if (isNaN(date))
-				throw new Error('Parameter period[end] is invalid. Expecting date in ISO 8601 format (YYYY-MM-DD)');
+				throw new ParsingError('Parameter period[end] is invalid. Expecting date in ISO 8601 format (YYYY-MM-DD)');
 
 			rtn.end = date;
 		}
@@ -48,17 +50,17 @@ module.exports.parsePeriod = function(period) {
 module.exports.parseDimensions = function(dimensions) {
 	const noObjectTest = (v) => {
 		if (typeof v === 'object' && !Array.isArray(v))
-			throw new Error(`Nested dimensions values are not supported: ${JSON.stringify(v)}`);
+			throw new ParsingError(`Nested dimensions values are not supported: ${JSON.stringify(v)}`);
 	};
 
 	const validateValue = (v) => {
 		if (!dimensionsValueRegexp.test(v))
-			throw new Error(`Invalid dimension value: '${v}'`);
+			throw new ParsingError(`Invalid dimension value: '${v}'`);
 	};
 
 	for (let [key, value] of Object.entries(dimensions)) {
 		if (!dimensionNameRegExp.test(key))
-			throw new Error(`Invalid dimensions name ${key}`);
+			throw new ParsingError(`Invalid dimensions name ${key}`);
 
 
 		if (typeof value === 'string') {

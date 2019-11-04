@@ -2,18 +2,18 @@ const indicators = require('./model');
 const pagination = require('jsonapi-pagination');
 const {RequestError} = require('express-api-server');
 const paginationHelper = require('../../helpers/pagination');
-const {parsePeriod, parseDimensions} = require('../../helpers/parsers');
 
 async function validateIndicatorId(req, res, next) {
 	try {
-		if (!indicators.isValid(req.params.indicator_id))
-			return next(new RequestError(req, 400, 'Invalid indicator id'));
-
-		if (!await indicators.exists(req.params.indicator_id).catch(next))
-			return next(new RequestError(req, 404, `Indicator '${req.params.indicator_id}' not found`));
-
+		await indicators.exists(req.params.indicator_id, true);
 		next();
 	} catch (err) {
+		switch (err.constructor.name) {
+		case 'InvalidIndicatorIdError':
+			return next(new RequestError(req, 400, err.message));
+		case 'MissingIndicatorError':
+			return next(new RequestError(req, 404, err.message));
+		}
 		next(err);
 	}
 }
@@ -63,19 +63,11 @@ module.exports = {
 					let {start, count} = pages.limits;
 
 					if (req.query.period) {
-						try {
-							options.period = parsePeriod(req.query.period);
-						} catch (e) {
-							return next(new RequestError(req, 400, e.message));
-						}
+						options.period = req.query.period;
 					}
 
 					if (req.query.dimensions) {
-						try {
-							options.dimensions = parseDimensions(req.query.dimensions);
-						} catch (e) {
-							return next(new RequestError(req, 400, e.message));
-						}
+						options.dimensions = req.query.dimensions;
 					}
 
 					let {length, list} = await indicators.listObservations(req.params.indicator_id, start, count, urlResolver, options);
@@ -87,6 +79,10 @@ module.exports = {
 					};
 					next();
 				} catch (err) {
+					switch (err.constructor.name) {
+					case 'ParsingError':
+						return next(new RequestError(req, 400, err.message));
+					}
 					next(err);
 				}
 			});

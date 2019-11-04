@@ -1,3 +1,4 @@
+const {isValid} = require('./validation');
 const client = require('../../helpers/pg-client');
 const jsonapiHelper = require('../../helpers/jsonapi');
 const defaultUrlResolver = require('../../helpers/defaultUrlResolver');
@@ -8,7 +9,23 @@ const countQuery = 'SELECT COUNT(*) FROM "vTimeseries"';
 const existQuery = 'SELECT COUNT(*) FROM  "vTimeseries" WHERE id = $1';
 const getQuery = 'SELECT * FROM "vTimeseries" WHERE id = $1 LIMIT 1';
 
-const timeseriesIdValidation = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+class MissingTimeseriesError extends Error {}
+
+let isIndicatorIdValid;
+
+function getFilters(options) {
+	let filter = [];
+
+	if (!isIndicatorIdValid) {
+		isIndicatorIdValid = require('../indicators/model').isValid;
+	}
+
+	if (options.indicator && isIndicatorIdValid(options.indicator, true)) {
+		filter.push(`indicator = '${options.indicator}'`);
+	}
+
+	return filter.length > 0 ? ` WHERE ${filter.join(' AND ')}` : '';
+}
 
 function format(timeserie, urlResolver) {
 	const self = urlResolver.resolve(`/timeseries/${timeserie.id}`);
@@ -39,17 +56,8 @@ function format(timeserie, urlResolver) {
 	});
 }
 
-function getFilters(options) {
-	let filter = [];
-
-	if (options.indicator) {
-		filter.push(`indicator = '${options.indicator}'`);
-	}
-
-	return filter.length > 0 ? ` WHERE ${filter.join(' AND ')}` : '';
-}
-
 module.exports = {
+	isValid,
 	list: async function(start, count, urlResolver = defaultUrlResolver, options={}) {
 		const filters = getFilters(options);
 		return new Promise(async (resolve, reject) => {
@@ -69,14 +77,18 @@ module.exports = {
 			}
 		});
 	},
-	isValid: function(id) {
-		return timeseriesIdValidation.test(id);
-	},
-	exists: async function(id) {
+	exists: async function(id, throwOnFalse = false) {
 		return new Promise(async (resolve, reject) => {
 			try {
+				this.isValid(id, true);
 				const res = await client.query([existQuery, id]);
-				resolve(res.rows[0].count > 0);
+				const exist = res.rows[0].count > 0;
+
+				if (!exist && throwOnFalse) {
+					reject(new MissingTimeseriesError(`Timeseries '${id}' not found`));
+				}
+
+				resolve(exist);
 			} catch (e) {
 				reject(e);
 			}
@@ -85,6 +97,7 @@ module.exports = {
 	get: async function(id, urlResolver = defaultUrlResolver) {
 		return new Promise(async (resolve, reject) => {
 			try {
+				this.isValid(id, true);
 				const res = await client.query([getQuery, id]);
 				resolve(res.rowCount > 0 ? format(res.rows[0], urlResolver) : undefined);
 			} catch (e) {

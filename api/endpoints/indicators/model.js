@@ -1,3 +1,4 @@
+const {isValid} = require('./validation');
 const client = require('../../helpers/pg-client');
 const jsonapiHelper = require('../../helpers/jsonapi');
 const jsonStat = require('../../helpers/json-stat');
@@ -12,7 +13,7 @@ const existQuery = 'SELECT COUNT(*) FROM  "vIndicators" WHERE id = $1';
 const getQuery = 'SELECT * FROM "vIndicators" WHERE id = $1 LIMIT 1';
 const getStatus = 'SELECT json_object(keys, values) status FROM (SELECT ARRAY_AGG(name) keys, ARRAY_AGG(symbol) "values" FROM status) s;';
 
-const indicatorIdValidation = /^[aA-zZ1-9_-]*$/;
+class MissingIndicatorError extends TypeError {}
 
 function format(indicator, urlResolver) {
 	const self = urlResolver.resolve(`/indicators/${indicator.id}`);
@@ -40,6 +41,7 @@ function format(indicator, urlResolver) {
 }
 
 module.exports = {
+	isValid,
 	list: async function(start, count, urlResolver = defaultUrlResolver) {
 		return new Promise(async (resolve, reject) => {
 			try {
@@ -58,14 +60,18 @@ module.exports = {
 			}
 		});
 	},
-	isValid: function(id) {
-		return indicatorIdValidation.test(id);
-	},
-	exists: async function(id) {
+	exists: async function(id, throwOnFalse = false) {
 		return new Promise(async (resolve, reject) => {
 			try {
+				this.isValid(id, true);
 				const res = await client.query([existQuery, id]);
-				resolve(res.rows[0].count > 0);
+				const exist = res.rows[0].count > 0;
+
+				if (!exist && throwOnFalse) {
+					reject(new MissingIndicatorError(`Indicator '${id}' not found`));
+				}
+
+				resolve(exist);
 			} catch (e) {
 				reject(e);
 			}
@@ -74,6 +80,7 @@ module.exports = {
 	get: async function(id, urlResolver = defaultUrlResolver) {
 		return new Promise(async (resolve, reject) => {
 			try {
+				this.isValid(id, true);
 				const res = await client.query([getQuery, id]);
 				resolve(res.rowCount > 0 ? format(res.rows[0], urlResolver) : undefined);
 			} catch (e) {
@@ -89,6 +96,7 @@ module.exports = {
 	},
 	getJSONStat: async function(id, urlResolver = defaultUrlResolver, options) {
 		return new Promise(async (resolve, reject) => {
+			this.isValid(id, true);
 			let [indicator, {list}] = await Promise.all([
 				this.get(id, urlResolver),
 				observations.list(0, null, urlResolver, {indicator: id})
@@ -99,6 +107,7 @@ module.exports = {
 	},
 	getSDMX: async function(id, urlResolver = defaultUrlResolver, options) {
 		return new Promise(async (resolve, reject) => {
+			this.isValid(id, true);
 			let [indicator, {list}, status] = await Promise.all([
 				this.get(id, urlResolver),
 				observations.list(0, null, urlResolver, {indicator: id}),

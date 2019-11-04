@@ -95,14 +95,18 @@ describe('Vectors (Legacy)', () => {
 				});
 			});
 
-			it('should return undefined for non-existing vectors', async () => {
+			it('should throw for non-existing vectors', async () => {
 				return new Promise(async (resolve, reject) => {
-					const timeseries = await vectors.getTimeseries(12345).catch(reject);
 					try {
-						assert.strictEqual(timeseries, undefined);
-						resolve();
-					} catch (e) {
-						reject(e);
+						await vectors.getTimeseries(12345);
+						reject(new Error('did not throw'));
+					} catch (err) {
+						try {
+							assert.strictEqual(err.message, 'Vector \'12345\' not found');
+							resolve();
+						} catch (err) {
+							reject(err);
+						}
 					}
 				});
 			});

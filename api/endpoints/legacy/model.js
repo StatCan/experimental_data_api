@@ -9,6 +9,9 @@ const getTimeseriesQuery = 'SELECT timeseries FROM "vVectors" WHERE id = $1 LIMI
 
 const vectorIdValidation = /^\d*$/;
 
+class InvalidVectorIdError extends TypeError {}
+class MissingVectorError extends TypeError {}
+
 function format(vector, urlResolver) {
 	const self = urlResolver.resolve(`/timeseries/${vector.timeseries}`);
 	return jsonapiHelper.format({
@@ -39,14 +42,27 @@ module.exports = {
 			}
 		});
 	},
-	isValid: function(id) {
-		return vectorIdValidation.test(id);
+	isValid: function(id, throwOnFalse = false) {
+		const ret = vectorIdValidation.test(id);
+
+		if (!ret && throwOnFalse) {
+			throw new InvalidVectorIdError('Invalid vector id');
+		}
+
+		return ret;
 	},
-	exists: async function(id) {
+	exists: async function(id, throwOnFalse = false) {
 		return new Promise(async (resolve, reject) => {
 			try {
+				this.isValid(id, true);
 				const res = await client.query([existQuery, id]);
-				resolve(res.rows[0].count > 0);
+				const exist = res.rows[0].count > 0;
+
+				if (!exist && throwOnFalse) {
+					reject(new MissingVectorError(`Vector '${id}' not found`));
+				}
+
+				resolve(exist);
 			} catch (e) {
 				reject(e);
 			}
@@ -55,6 +71,7 @@ module.exports = {
 	getTimeseries: async function(id, urlResolver) {
 		return new Promise(async (resolve, reject) => {
 			try {
+				await this.exists(id, true);
 				const res = await client.query([getTimeseriesQuery, id]);
 				resolve(res.rowCount > 0 ? res.rows[0].timeseries : undefined);
 			} catch (e) {

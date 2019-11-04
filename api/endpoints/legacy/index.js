@@ -4,13 +4,18 @@ const {RequestError} = require('express-api-server');
 const paginationHelper = require('../../helpers/pagination');
 
 async function validateVectorId(req, res, next) {
-	if (!vectors.isValid(req.params.vector_id))
-		return next(new RequestError(req, 400, 'Invalid indicator id'));
-
-	if (!await vectors.exists(req.params.vector_id).catch(next))
-		return next(new RequestError(req, 404, `Indicator '${req.params.vector_id}' not found`));
-
-	next();
+	try {
+		await vectors.exists(req.params.vector_id, true);
+		next();
+	} catch (err) {
+		switch (err.constructor.name) {
+		case 'InvalidVectorIdError':
+			return next(new RequestError(req, 400, err.message));
+		case 'MissingVectorError':
+			return next(new RequestError(req, 404, err.message));
+		}
+		next(err);
+	}
 }
 
 module.exports = {
@@ -38,7 +43,7 @@ module.exports = {
 				try {
 					let pages = pagination(req);
 					let {start, count} = pages.limits;
-					let {length, list} = await vectors.list(start, count, urlResolver).catch(next);
+					let {length, list} = await vectors.list(start, count, urlResolver);
 					let links = paginationHelper.getLinks(pages, length, urlResolver);
 
 					res.locals.json = {
@@ -56,7 +61,7 @@ module.exports = {
 			.get(validateVectorId)
 			.get(async (req, res, next) => {
 				try {
-					const timeseries = await vectors.getTimeseries(req.params.vector_id, urlResolver).catch(next);
+					const timeseries = await vectors.getTimeseries(req.params.vector_id, urlResolver);
 					res.redirect(`/timeseries/${timeseries}`);
 				} catch (err) {
 					next(err);
