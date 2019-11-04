@@ -47,17 +47,26 @@ describe('Vectors (Legacy)', () => {
 		});
 
 		describe('`isValid` function', () => {
-			it('should return true for a valid indicator id', () => {
+			it('should return true for a valid vector id', () => {
 				assert.strictEqual(vectors.isValid('12'), true);
 			});
 
-			it('should return true for a valid indicator id', () => {
+			it('should return false for an invalid vector id', () => {
 				assert.strictEqual(vectors.isValid('1-2'), false);
+			});
+
+			it('should throw for an invalid vector id when `throwOnFalse is set to true`', () => {
+				assert.throws(
+					() => vectors.isValid('1-2', true),
+					{
+						message: 'Invalid vector id'
+					}
+				);
 			});
 		});
 
 		describe('`exists` function', () => {
-			it('should return `true` for existing indicator', async () => {
+			it('should return `true` for existing vector', async () => {
 				return new Promise(async (resolve, reject) => {
 					const exists = await vectors.exists(4).catch(reject);
 					try {
@@ -69,7 +78,7 @@ describe('Vectors (Legacy)', () => {
 				});
 			});
 
-			it('should return `false` for non-existing indicator', async () => {
+			it('should return `false` for non-existing vector', async () => {
 				return new Promise(async (resolve, reject) => {
 					const exists = await vectors.exists(12345).catch(reject);
 					try {
@@ -77,6 +86,38 @@ describe('Vectors (Legacy)', () => {
 						resolve();
 					} catch (e) {
 						reject(e);
+					}
+				});
+			});
+
+			it('should throw for an invalid vector id`', async () => {
+				return new Promise(async (resolve, reject) => {
+					try {
+						await vectors.exists('%invalid-id');
+						reject('did not throw');
+					} catch (err) {
+						try {
+							assert.strictEqual(err.message, 'Invalid vector id');
+							resolve();
+						} catch (err) {
+							reject(err);
+						}
+					}
+				});
+			});
+
+			it('should throw for an non-existing vector when `throwOnFalse is set to true`', () => {
+				return new Promise(async (resolve, reject) => {
+					try {
+						await vectors.exists(999, true);
+						reject('did not throw');
+					} catch (err) {
+						try {
+							assert.strictEqual(err.message, 'Vector \'999\' not found');
+							resolve();
+						} catch (err) {
+							reject(err);
+						}
 					}
 				});
 			});
@@ -91,6 +132,22 @@ describe('Vectors (Legacy)', () => {
 						resolve();
 					} catch (e) {
 						reject(e);
+					}
+				});
+			});
+
+			it('should throw for an invalid vector id`', async () => {
+				return new Promise(async (resolve, reject) => {
+					try {
+						await vectors.getTimeseries('%invalid-id');
+						reject('did not throw');
+					} catch (err) {
+						try {
+							assert.strictEqual(err.message, 'Invalid vector id');
+							resolve();
+						} catch (err) {
+							reject(err);
+						}
 					}
 				});
 			});

@@ -73,9 +73,18 @@ describe('Timeseries', () => {
 				assert.strictEqual(timeseries.isValid('235fd621-a670-4b62-b829-dc1da213e062'), true);
 			});
 
-			it('should return true for a valid timeseries id', () => {
+			it('should return false for an invalid timeseries id', () => {
 				assert.strictEqual(timeseries.isValid('%invalid-id'), false);
 				assert.strictEqual(timeseries.isValid('235zz621-z670-4z62-z829-zz1dz213z062'), false);
+			});
+
+			it('should throw for an invalid timeseries id when `throwOnFalse is set to true`', () => {
+				assert.throws(
+					() => timeseries.isValid('1-2', true),
+					{
+						message: 'Invalid timeseries id'
+					}
+				);
 			});
 		});
 
@@ -103,6 +112,38 @@ describe('Timeseries', () => {
 					}
 				});
 			});
+
+			it('should throw for an invalid timeseries id`', async () => {
+				return new Promise(async (resolve, reject) => {
+					try {
+						await timeseries.exists('%invalid-id');
+						reject('did not throw');
+					} catch (err) {
+						try {
+							assert.strictEqual(err.message, 'Invalid timeseries id');
+							resolve();
+						} catch (err) {
+							reject(err);
+						}
+					}
+				});
+			});
+
+			it('should throw for an non-existing observation when `throwOnFalse is set to true`', () => {
+				return new Promise(async (resolve, reject) => {
+					try {
+						await timeseries.exists('f052c4b3-ae8b-43ca-a6f7-ff75fcfc49c5', true);
+						reject('did not throw');
+					} catch (err) {
+						try {
+							assert.strictEqual(err.message, 'Timeseries \'f052c4b3-ae8b-43ca-a6f7-ff75fcfc49c5\' not found');
+							resolve();
+						} catch (err) {
+							reject(err);
+						}
+					}
+				});
+			});
 		});
 
 		describe('`get` function', () => {
@@ -127,6 +168,22 @@ describe('Timeseries', () => {
 						resolve();
 					} catch (e) {
 						reject(e);
+					}
+				});
+			});
+
+			it('should throw for an invalid timeseries id`', async () => {
+				return new Promise(async (resolve, reject) => {
+					try {
+						await timeseries.get('%invalid-id');
+						reject('did not throw');
+					} catch (err) {
+						try {
+							assert.strictEqual(err.message, 'Invalid timeseries id');
+							resolve();
+						} catch (err) {
+							reject(err);
+						}
 					}
 				});
 			});
@@ -175,6 +232,22 @@ describe('Timeseries', () => {
 						resolve();
 					} catch (e) {
 						reject(e);
+					}
+				});
+			});
+
+			it('should throw for an invalid timeseries id`', async () => {
+				return new Promise(async (resolve, reject) => {
+					try {
+						await timeseries.listObservations('%invalid-id');
+						reject('did not throw');
+					} catch (err) {
+						try {
+							assert.strictEqual(err.message, 'Invalid timeseries id');
+							resolve();
+						} catch (err) {
+							reject(err);
+						}
 					}
 				});
 			});
