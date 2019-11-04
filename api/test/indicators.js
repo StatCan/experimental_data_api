@@ -79,8 +79,17 @@ describe('Indicators', () => {
 				assert.strictEqual(indicators.isValid('test_indicator-id1'), true);
 			});
 
-			it('should return true for a valid indicator id', () => {
+			it('should return false for an invalid indicator id', () => {
 				assert.strictEqual(indicators.isValid('%invalid-id'), false);
+			});
+
+			it('should throw for an invalid indicator id when `throwOnFalse is set to true`', () => {
+				assert.throws(
+					() => indicators.isValid('%invalid-id', true),
+					{
+						message: 'Invalid indicator id'
+					}
+				);
 			});
 		});
 
@@ -108,6 +117,22 @@ describe('Indicators', () => {
 					}
 				});
 			});
+
+			it('should throw for an invalid indicator id`', async () => {
+				return new Promise(async (resolve, reject) => {
+					try {
+						await indicators.exists('%invalid-id');
+						reject('did not throw');
+					} catch (err) {
+						try {
+							assert.strictEqual(err.message, 'Invalid indicator id');
+							resolve();
+						} catch (err) {
+							reject(err);
+						}
+					}
+				});
+			});
 		});
 
 		describe('`get` function', () => {
@@ -132,6 +157,22 @@ describe('Indicators', () => {
 						resolve();
 					} catch (e) {
 						reject(e);
+					}
+				});
+			});
+
+			it('should throw for an invalid indicator id`', async () => {
+				return new Promise(async (resolve, reject) => {
+					try {
+						await indicators.get('%invalid-id');
+						reject('did not throw');
+					} catch (err) {
+						try {
+							assert.strictEqual(err.message, 'Invalid indicator id');
+							resolve();
+						} catch (err) {
+							reject(err);
+						}
 					}
 				});
 			});
@@ -180,6 +221,22 @@ describe('Indicators', () => {
 						resolve();
 					} catch (e) {
 						reject(e);
+					}
+				});
+			});
+
+			it('should throw for an invalid indicator id`', async () => {
+				return new Promise(async (resolve, reject) => {
+					try {
+						await indicators.listObservations('%invalid-id');
+						reject('did not throw');
+					} catch (err) {
+						try {
+							assert.strictEqual(err.message, 'Invalid indicator id');
+							resolve();
+						} catch (err) {
+							reject(err);
+						}
 					}
 				});
 			});
@@ -286,6 +343,22 @@ describe('Indicators', () => {
 				});
 			});
 
+			it('should throw for an invalid indicator id`', async () => {
+				return new Promise(async (resolve, reject) => {
+					try {
+						await indicators.listTimeseries('%invalid-id');
+						reject('did not throw');
+					} catch (err) {
+						try {
+							assert.strictEqual(err.message, 'Invalid indicator id');
+							resolve();
+						} catch (err) {
+							reject(err);
+						}
+					}
+				});
+			});
+
 			it('should offset the list by the `start` argument', async () => {
 				return new Promise(async (resolve, reject) => {
 					const indicator = 'indicator1';
@@ -329,6 +402,22 @@ describe('Indicators', () => {
 				// 	}
 				// });
 			});
+
+			it('should throw for an invalid indicator id`', async () => {
+				return new Promise(async (resolve, reject) => {
+					try {
+						await indicators.listTimeseries('%invalid-id');
+						reject('did not throw');
+					} catch (err) {
+						try {
+							assert.strictEqual(err.message, 'Invalid indicator id');
+							resolve();
+						} catch (err) {
+							reject(err);
+						}
+					}
+				});
+			});
 		});
 
 		describe('`getSDMX` function', () => {
@@ -342,6 +431,22 @@ describe('Indicators', () => {
 				// 		reject(e);
 				// 	}
 				// });
+			});
+
+			it('should throw for an invalid indicator id`', async () => {
+				return new Promise(async (resolve, reject) => {
+					try {
+						await indicators.listTimeseries('%invalid-id');
+						reject('did not throw');
+					} catch (err) {
+						try {
+							assert.strictEqual(err.message, 'Invalid indicator id');
+							resolve();
+						} catch (err) {
+							reject(err);
+						}
+					}
+				});
 			});
 		});
 	});

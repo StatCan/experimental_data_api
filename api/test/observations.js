@@ -87,9 +87,18 @@ describe('Observations', () => {
 				assert.strictEqual(observations.isValid('235fd621-a670-4b62-b829-dc1da213e062'), true);
 			});
 
-			it('should return true for a valid observation id', () => {
+			it('should return false for an invalid observation id', () => {
 				assert.strictEqual(observations.isValid('%invalid-id'), false);
 				assert.strictEqual(observations.isValid('235zz621-z670-4z62-z829-zz1dz213z062'), false);
+			});
+
+			it('should throw for an invalid observation id when `throwOnFalse is set to true`', () => {
+				assert.throws(
+					() => observations.isValid('235zz621-z670-4z62-z829-zz1dz213z062', true),
+					{
+						message: 'Invalid observation id'
+					}
+				);
 			});
 		});
 
@@ -117,6 +126,22 @@ describe('Observations', () => {
 					}
 				});
 			});
+
+			it('should throw for an invalid observation id`', async () => {
+				return new Promise(async (resolve, reject) => {
+					try {
+						await observations.exists('%invalid-id');
+						reject('did not throw');
+					} catch (err) {
+						try {
+							assert.strictEqual(err.message, 'Invalid observation id');
+							resolve();
+						} catch (err) {
+							reject(err);
+						}
+					}
+				});
+			});
 		});
 
 		describe('`get` function', () => {
@@ -141,6 +166,22 @@ describe('Observations', () => {
 						resolve();
 					} catch (e) {
 						reject(e);
+					}
+				});
+			});
+
+			it('should throw for an invalid observation id`', async () => {
+				return new Promise(async (resolve, reject) => {
+					try {
+						await observations.get('%invalid-id');
+						reject('did not throw');
+					} catch (err) {
+						try {
+							assert.strictEqual(err.message, 'Invalid observation id');
+							resolve();
+						} catch (err) {
+							reject(err);
+						}
 					}
 				});
 			});
