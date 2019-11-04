@@ -1,4 +1,4 @@
-const {Client} = require('pg').native;
+const client = require('../../helpers/pg-client');
 const jsonapiHelper = require('../../helpers/jsonapi');
 const defaultUrlResolver = require('../../helpers/defaultUrlResolver');
 const observations = require('../observations/model');
@@ -51,15 +51,13 @@ function getFilters(options) {
 
 module.exports = {
 	list: async function(start, count, urlResolver = defaultUrlResolver, options={}) {
-		const client = new Client();
 		const filters = getFilters(options);
 		return new Promise(async (resolve, reject) => {
-			await client.connect().catch(reject);
 			try {
-				const [res, countRes] = await Promise.all([
-					client.query(listQuery[0] + filters + listQuery[1], [count, start]),
-					client.query(countQuery + filters)
-				]).catch(reject);
+				const [res, countRes] = await client.query(
+					[listQuery[0] + filters + listQuery[1], count, start],
+					countQuery + filters
+				);
 				resolve({
 					length: parseInt(countRes.rows[0].count, 10),
 					list: res.rows.map((o) => {
@@ -68,8 +66,6 @@ module.exports = {
 				});
 			} catch (e) {
 				reject(e);
-			} finally {
-				client.end();
 			}
 		});
 	},
@@ -77,21 +73,23 @@ module.exports = {
 		return timeseriesIdValidation.test(id);
 	},
 	exists: async function(id) {
-		const client = new Client();
 		return new Promise(async (resolve, reject) => {
-			await client.connect().catch(reject);
-			const res = await client.query(existQuery, [id]).catch(reject);
-			client.end();
-			resolve(res.rows[0].count > 0);
+			try {
+				const res = await client.query([existQuery, id]);
+				resolve(res.rows[0].count > 0);
+			} catch (e) {
+				reject(e);
+			}
 		});
 	},
 	get: async function(id, urlResolver = defaultUrlResolver) {
-		const client = new Client();
 		return new Promise(async (resolve, reject) => {
-			await client.connect().catch(reject);
-			const res = await client.query(getQuery, [id]).catch(reject);
-			client.end();
-			resolve(res.rowCount > 0 ? format(res.rows[0], urlResolver) : undefined);
+			try {
+				const res = await client.query([getQuery, id]);
+				resolve(res.rowCount > 0 ? format(res.rows[0], urlResolver) : undefined);
+			} catch (e) {
+				reject(e);
+			}
 		});
 	},
 	listObservations: async function(id, start, count, urlResolver = defaultUrlResolver, options) {
