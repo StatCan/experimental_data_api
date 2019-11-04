@@ -222,9 +222,11 @@ describe('Indicators', () => {
 			describe('Filtering', () => {
 				it('should send filtering options to the observation `list` function', async () => {
 					return new Promise(async (resolve, reject) => {
-						const noFilter = await indicators.listObservations('indicator1', 0, 10).catch(reject);
-						const indicatorObservations = await indicators.listObservations('indicator1', 0, 10, undefined, {dimensions: {sex: ['female']}}).catch(reject);
-						const observationsList = await observations.list(0, 10, undefined, {indicator: 'indicator1', dimensions: {sex: ['female']}}).catch(reject);
+						const indicator = 'indicator1';
+						const filters = {dimensions: {sex: ['female']}};
+						const noFilter = await indicators.listObservations(indicator, 0, 10).catch(reject);
+						const indicatorObservations = await indicators.listObservations(indicator, 0, 10, undefined, filters).catch(reject);
+						const observationsList = await observations.list(0, 10, undefined, {indicator: indicator, ...filters}).catch(reject);
 						try {
 							assert.notStrictEqual(JSON.stringify(noFilter), JSON.stringify(indicatorObservations));
 							assert.strictEqual(JSON.stringify(indicatorObservations), JSON.stringify(observationsList));
@@ -286,8 +288,9 @@ describe('Indicators', () => {
 
 			it('should offset the list by the `start` argument', async () => {
 				return new Promise(async (resolve, reject) => {
-					const timeseries1 = await indicators.listTimeseries('indicator1', 1, 10).catch(reject);
-					const timeseries2 = await indicators.listTimeseries('indicator1', 0, 10).catch(reject);
+					const indicator = 'indicator1';
+					const timeseries1 = await indicators.listTimeseries(indicator, 1, 10).catch(reject);
+					const timeseries2 = await indicators.listTimeseries(indicator, 0, 10).catch(reject);
 					try {
 						assert.strictEqual(timeseries1.list[0].id, timeseries2.list[1].id);
 						resolve();
