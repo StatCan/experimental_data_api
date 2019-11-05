@@ -610,7 +610,21 @@ describe('Observations', () => {
 		});
 
 		describe('Routes', () => {
+			describe('/observations', () => {
+				it.skip('should have tests');
+			});
 
+			describe('/observations/:observation_id', () => {
+				it.skip('should have tests');
+			});
+
+			describe('/observations/:observation_id/revisions', () => {
+				it.skip('should have tests');
+			});
+
+			describe('/observations/:observation_id/notes', () => {
+				it.skip('should have tests');
+			});
 		});
 	});
 });

@@ -176,7 +176,13 @@ describe('Vectors (Legacy)', () => {
 		});
 
 		describe('Routes', () => {
+			describe('/legacy/vectors', () => {
+				it.skip('should have tests');
+			});
 
+			describe('/legacy/vectors/:vector_id', () => {
+				it.skip('should have tests');
+			});
 		});
 	});
 });

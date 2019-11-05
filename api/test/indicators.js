@@ -473,7 +473,29 @@ describe('Indicators', () => {
 		});
 
 		describe('Routes', () => {
+			describe('/indicators', () => {
+				it.skip('should have tests');
+			});
 
+			describe('/indicators/:indicator_id', () => {
+				it.skip('should have tests');
+			});
+
+			describe('/indicators/:indicator_id/observations', () => {
+				it.skip('should have tests');
+			});
+
+			describe('/indicators/:indicator_id/timeseries', () => {
+				it.skip('should have tests');
+			});
+
+			describe('/indicators/:indicator_id/json-stat', () => {
+				it.skip('should have tests');
+			});
+
+			describe('/indicators/:indicator_id/sdmx', () => {
+				it.skip('should have tests');
+			});
 		});
 	});
 });

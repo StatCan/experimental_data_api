@@ -498,7 +498,17 @@ describe('Timeseries', () => {
 		});
 
 		describe('Routes', () => {
+			describe('/timeseries', () => {
+				it.skip('should have tests');
+			});
 
+			describe('/timeseries/:timeseries_id', () => {
+				it.skip('should have tests');
+			});
+
+			describe('/timeseries/:timeseries_id/observations', () => {
+				it.skip('should have tests');
+			});
 		});
 	});
 });
