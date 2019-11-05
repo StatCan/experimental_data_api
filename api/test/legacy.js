@@ -1,6 +1,9 @@
 /* eslint-env mocha */
 /* eslint "node/no-unpublished-require": 0 */
 const assert = require('assert');
+const util = require('util');
+const request = util.promisify(require('request'));
+const api = require('../index');
 
 describe('Vectors (Legacy)', () => {
 	describe('Model', () => {
@@ -171,17 +174,109 @@ describe('Vectors (Legacy)', () => {
 	});
 
 	describe('API', () => {
-		describe('Output', () => {
+		let server;
 
+		before(() => {
+			server = api.start();
+		});
+
+		after(() => {
+			server.close();
+		});
+
+		describe('Output', () => {
+			let vector;
+
+			before(async () => {
+				return new Promise(async (resolve, reject) => {
+					const options = {
+						uri: 'http://localhost:8000/legacy/vectors',
+						json: true
+					};
+					try {
+						const {body} = await request(options);
+						vector = body.data[0];
+						resolve();
+					} catch (err) {
+						reject(err);
+					}
+				});
+			});
+
+			it('should have a numerical id', () => {
+				assert.strictEqual(typeof vector.id, 'number');
+			});
+
+			it('should have the type \'vector\'', () => {
+				assert.strictEqual(vector.type, 'vector');
+			});
+
+			it('should have a link to itself', () => {
+				assert.strictEqual(typeof vector.links, 'object');
+				assert.strictEqual(vector.links.self, 'http://localhost:8000/timeseries/d3a06c6b-82a7-4efa-8f0f-6cb453deff2c');
+			});
+
+			it('should have the timeseries attribute', () => {
+				assert.strictEqual(typeof vector.attributes, 'object');
+				assert.strictEqual(vector.attributes.timeseries, 'd3a06c6b-82a7-4efa-8f0f-6cb453deff2c');
+			});
 		});
 
 		describe('Routes', () => {
 			describe('/legacy/vectors', () => {
-				it.skip('should have tests');
+				let req;
+				let body;
+
+				before(async () => {
+					return new Promise(async (resolve, reject) => {
+						const options = {
+							uri: 'http://localhost:8000/legacy/vectors',
+							json: true
+						};
+						try {
+							({req, body} = await request(options));
+							resolve();
+						} catch (err) {
+							reject(err);
+						}
+					});
+				});
+
+				it('should return an http 200 status code', () => {
+					assert.strictEqual(req.res.statusCode, 200);
+				});
+
+				it('should return a list of vectors', () => {
+					assert.strictEqual(body.data.length, 6);
+					for (const vector of body.data) {
+						assert.strictEqual(vector.type, 'vector');
+					}
+				});
 			});
 
 			describe('/legacy/vectors/:vector_id', () => {
-				it.skip('should have tests');
+				let req;
+
+				before(async () => {
+					return new Promise(async (resolve, reject) => {
+						const options = {
+							uri: 'http://localhost:8000/legacy/vectors/1',
+							json: true
+						};
+						try {
+							({req} = await request(options));
+							resolve();
+						} catch (err) {
+							reject(err);
+						}
+					});
+				});
+				it('should redirect to the timeseries', () => {
+					assert.strictEqual(req.path, '/timeseries/d3a06c6b-82a7-4efa-8f0f-6cb453deff2c');
+				});
+				it('should return an http 200 status code', () => {
+					assert.strictEqual(req.res.statusCode, 200);
+				});
 			});
 		});
 	});
