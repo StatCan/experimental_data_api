@@ -32,6 +32,10 @@ module.exports = {
 						options.indicator = req.query.indicator;
 					}
 
+					if (req.query.dimensions) {
+						options.dimensions = req.query.dimensions;
+					}
+
 					let {length, list} = await timeseries.list(start, count, urlResolver, options);
 					let links = paginationHelper.getLinks(pages, length, urlResolver);
 

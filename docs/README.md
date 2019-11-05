@@ -321,6 +321,13 @@ GET /observations/:observation_id
 GET /timeseries
 ```
 
+###### Parameteres ######
+
+| Name | Type | Description |
+|---|---|---|
+| indicator | string | The name of the indicator |
+| dimensions[:dimension_name] | string | Specify the dimension_name:value pair. Ex: `dimensions[geographicArea]=ON`. You can specify multiple value by repeating the parameter or via a comma-seperated value. Ex: `dimensions[geographicArea]=QC&dimensions[geographicArea]=ON` or `dimensions[geographicArea]=QC,ON` |
+
 ###### Response ######
 
 ```json

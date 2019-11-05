@@ -1,5 +1,6 @@
 const {isValid} = require('./validation');
 const client = require('../../helpers/pg-client');
+const {parseDimensions} = require('../../helpers/parsers');
 const jsonapiHelper = require('../../helpers/jsonapi');
 const defaultUrlResolver = require('../../helpers/defaultUrlResolver');
 const observations = require('../observations/model');
@@ -22,6 +23,13 @@ function getFilters(options) {
 
 	if (options.indicator && isIndicatorIdValid(options.indicator, true)) {
 		filter.push(`indicator = '${options.indicator}'`);
+	}
+
+	if (options.dimensions) {
+		const dimensions = parseDimensions(options.dimensions);
+		for (const [key, values] of Object.entries(dimensions)) {
+			filter.push(`dimensions ->> '${key}' IN ('${values.join('\',\'')}')`);
+		}
 	}
 
 	return filter.length > 0 ? ` WHERE ${filter.join(' AND ')}` : '';
