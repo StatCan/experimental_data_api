@@ -64,7 +64,191 @@ describe('Timeseries', () => {
 			});
 
 			describe('Filtering', () => {
-				it.skip('should have tests');
+				describe('by Indicator', () => {
+					it('should filter observations when an existing indicator is specified', async () => {
+						return new Promise(async (resolve, reject) => {
+							const indicator = 'indicator1';
+							const list = await timeseries.list(0, 10, undefined, {
+								indicator
+							}).catch(reject);
+							try {
+								assert.strictEqual(list.list.length, 2);
+								assert.strictEqual(list.length, 2);
+								for (const obs of list.list) {
+									assert.strictEqual(obs.relationships.indicator.data.id, indicator);
+								}
+								resolve();
+							} catch (e) {
+								reject(e);
+							}
+						});
+					});
+
+					it('should filter observations when an non-existing indicator is specified', async () => {
+						return new Promise(async (resolve, reject) => {
+							const list = await timeseries.list(0, 10, undefined, {
+								indicator: 'indicator0'
+							}).catch(reject);
+							try {
+								assert.strictEqual(list.list.length, 0);
+								assert.strictEqual(list.length, 0);
+								assert.strictEqual(JSON.stringify(list.list), '[]');
+								resolve();
+							} catch (e) {
+								reject(e);
+							}
+						});
+					});
+
+					it('should throw when an invalid indicator id is specified', async () => {
+						return new Promise(async (resolve, reject) => {
+							try {
+								await timeseries.list(0, 10, undefined, {
+									indicator: '%invalid-id'
+								});
+								reject('did not throw');
+							} catch (e) {
+								try {
+									assert.strictEqual(e.message, 'Invalid indicator id');
+									resolve();
+								} catch (e) {
+									reject(e);
+								}
+							}
+						});
+					});
+				});
+
+				describe('by Dimension', () => {
+					it('should filter observations when one dimension filter with one value is specified', async () => {
+						return new Promise(async (resolve, reject) => {
+							const sex = 'female';
+							const list = await timeseries.list(0, 10, undefined, {
+								dimensions: {
+									sex
+								}
+							}).catch(reject);
+							try {
+								assert.strictEqual(list.list.length, 2);
+								assert.strictEqual(list.length, 2);
+								for (const obs of list.list) {
+									assert.strictEqual(obs.attributes.dimensions.sex, sex);
+								}
+								resolve();
+							} catch (e) {
+								reject(e);
+							}
+						});
+					});
+
+					it('should filter observations when one dimension filter with multiple values are specified', async () => {
+						return new Promise(async (resolve, reject) => {
+							const sex = ['male', 'female'];
+							const list = await timeseries.list(0, 10, undefined, {
+								dimensions: {
+									sex
+								}
+							}).catch(reject);
+							try {
+								assert.strictEqual(list.list.length, 4);
+								assert.strictEqual(list.length, 4);
+								for (const obs of list.list) {
+									const s = obs.attributes.dimensions.sex;
+									assert.ok(sex.indexOf(s) !== -1, `sex is '${s}' but should be one of ['${sex.join('\', \'')}']`);
+								}
+								resolve();
+							} catch (e) {
+								reject(e);
+							}
+						});
+					});
+
+					it('should filter observations when multiple dimension filters with one value each is specified', async () => {
+						return new Promise(async (resolve, reject) => {
+							const dimensions = {
+								sex: 'female',
+								geographicArea: '24'
+							};
+							const list = await timeseries.list(0, 10, undefined, {
+								dimensions: {...dimensions}
+							}).catch(reject);
+							try {
+								assert.strictEqual(list.list.length, 1);
+								assert.strictEqual(list.length, 1);
+								for (const obs of list.list) {
+									assert.strictEqual(JSON.stringify(obs.attributes.dimensions), JSON.stringify(dimensions));
+								}
+								resolve();
+							} catch (e) {
+								reject(e);
+							}
+						});
+					});
+
+					it('should filter observations when multiple dimension filters with multiple values each are specified', async () => {
+						return new Promise(async (resolve, reject) => {
+							const dimensions = {
+								sex: ['male', 'female'],
+								geographicArea: ['24', '35']
+							};
+							const list = await timeseries.list(0, 10, undefined, {
+								dimensions: {...dimensions}
+							}).catch(reject);
+							try {
+								assert.strictEqual(list.list.length, 4);
+								assert.strictEqual(list.length, 4);
+								for (const obs of list.list) {
+									const d = obs.attributes.dimensions;
+									assert.ok(dimensions.sex.indexOf(d.sex) !== -1, `sex is '${d.sex}' but should be one of ['${dimensions.sex.join('\', \'')}']`);
+									assert.ok(dimensions.geographicArea.indexOf(d.geographicArea) !== -1, `geographicArea is '${d.geographicArea}' but should be one of ['${dimensions.geographicArea.join('\', \'')}']`);
+								}
+								resolve();
+							} catch (e) {
+								reject(e);
+							}
+						});
+					});
+
+					it('should throw when an invalid dimension name is specified', async () => {
+						return new Promise(async (resolve, reject) => {
+							try {
+								await timeseries.list(0, 10, undefined, {
+									dimensions: {
+										'%invalid-id': 'test'
+									}
+								});
+								reject('did not throw');
+							} catch (e) {
+								try {
+									assert.strictEqual(e.message, 'Invalid dimensions name %invalid-id');
+									resolve();
+								} catch (e) {
+									reject(e);
+								}
+							}
+						});
+					});
+
+					it('should throw when an invalid dimension value is specified', async () => {
+						return new Promise(async (resolve, reject) => {
+							try {
+								await timeseries.list(0, 10, undefined, {
+									dimensions: {
+										sex: '%invalid-value'
+									}
+								});
+								reject('did not throw');
+							} catch (e) {
+								try {
+									assert.strictEqual(e.message, 'Invalid dimension value: \'%invalid-value\'');
+									resolve();
+								} catch (e) {
+									reject(e);
+								}
+							}
+						});
+					});
+				});
 			});
 		});
 
