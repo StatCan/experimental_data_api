@@ -92,10 +92,15 @@ module.exports = {
 			.get(validateIndicatorId)
 			.get(async (req, res, next) => {
 				try {
+					const options = {};
 					let pages = pagination(req);
 					let {start, count} = pages.limits;
 
-					let {length, list} = await indicators.listTimeseries(req.params.indicator_id, start, count, urlResolver);
+					if (req.query.dimensions) {
+						options.dimensions = req.query.dimensions;
+					}
+
+					let {length, list} = await indicators.listTimeseries(req.params.indicator_id, start, count, urlResolver, options);
 					let links = paginationHelper.getLinks(pages, length, urlResolver);
 
 					res.locals.json = {
