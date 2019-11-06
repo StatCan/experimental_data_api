@@ -1,6 +1,9 @@
 /* eslint-env mocha */
 /* eslint "node/no-unpublished-require": 0 */
 const assert = require('assert');
+const util = require('util');
+const request = util.promisify(require('request'));
+const api = require('../index');
 
 describe('Indicators', () => {
 	describe('Model', () => {
@@ -483,33 +486,451 @@ describe('Indicators', () => {
 	});
 
 	describe('API', () => {
+		let server;
+
+		before(() => {
+			server = api.start();
+		});
+
+		after(() => {
+			server.close();
+		});
+
 		describe('Output', () => {
 
 		});
 
 		describe('Routes', () => {
 			describe('/indicators', () => {
-				it.skip('should have tests');
+				describe('No filter', () => {
+					let req;
+					let body;
+					before(async () => {
+						return new Promise(async (resolve, reject) => {
+							const options = {
+								uri: 'http://localhost:8000/indicators',
+								json: true
+							};
+							try {
+								({req, body} = await request(options));
+								resolve();
+							} catch (err) {
+								reject(err);
+							}
+						});
+					});
+
+					it('should return an http 200 status code', () => {
+						assert.strictEqual(req.res.statusCode, 200);
+					});
+
+					it('should return a list of indicators', () => {
+						assert.strictEqual(body.data.length, 2);
+						for (const indicator of body.data) {
+							assert.strictEqual(indicator.type, 'indicator');
+						}
+					});
+				});
+
+				describe('Pagination', () => {
+					let body;
+					before(async () => {
+						return new Promise(async (resolve, reject) => {
+							const options = {
+								uri: 'http://localhost:8000/indicators?page[size]=1&page[number]=2',
+								json: true
+							};
+							try {
+								({body} = await request(options));
+								resolve();
+							} catch (err) {
+								reject(err);
+							}
+						});
+					});
+
+					it('should apply pagination logic', () => {
+						assert.strictEqual(body.data.length, 1);
+					});
+
+					it('should contain pagination links', () => {
+						const url = 'http://localhost:8000/indicators?page[size]=1&page[number]=1';
+						assert.strictEqual(body.links.first, url);
+						assert.strictEqual(body.links.prev, url);
+					});
+				});
 			});
 
 			describe('/indicators/:indicator_id', () => {
-				it.skip('should have tests');
+				describe('Existing indicator', () => {
+					const indicator = 'indicator1';
+					let req;
+					let body;
+					before(async () => {
+						return new Promise(async (resolve, reject) => {
+							const options = {
+								uri: `http://localhost:8000/indicators/${indicator}`,
+								json: true
+							};
+							try {
+								({req, body} = await request(options));
+								resolve();
+							} catch (err) {
+								reject(err);
+							}
+						});
+					});
+
+					it('should return an http 200 status code', () => {
+						assert.strictEqual(req.res.statusCode, 200);
+					});
+
+					it('should return an indicator', () => {
+						assert.strictEqual(body.data.id, indicator);
+					});
+				});
+
+				describe('Non-existing indicator', () => {
+					const indicator = 'indicator0';
+					let req;
+					let body;
+					before(async () => {
+						return new Promise(async (resolve, reject) => {
+							const options = {
+								uri: `http://localhost:8000/indicators/${indicator}`,
+								json: true
+							};
+							try {
+								({req, body} = await request(options));
+								resolve();
+							} catch (err) {
+								reject(err);
+							}
+						});
+					});
+
+					it('should return an http 404 status code', () => {
+						assert.strictEqual(req.res.statusCode, 404);
+					});
+
+					it('should return an error message', () => {
+						const expected = {
+							errors: [
+								{
+									title: `Indicator '${indicator}' not found`
+								}
+							]
+						};
+						assert.strictEqual(JSON.stringify(body), JSON.stringify(expected));
+					});
+				});
+
+				describe('Invalid indicator id', () => {
+					const indicator = '%25invalid-indicator';
+					let req;
+					let body;
+					before(async () => {
+						return new Promise(async (resolve, reject) => {
+							const options = {
+								uri: `http://localhost:8000/indicators/${indicator}`,
+								json: true
+							};
+							try {
+								({req, body} = await request(options));
+								resolve();
+							} catch (err) {
+								reject(err);
+							}
+						});
+					});
+
+					it('should return an http 400 status code', () => {
+						assert.strictEqual(req.res.statusCode, 400);
+					});
+
+					it('should return an error message', () => {
+						const expected = {
+							errors: [
+								{
+									title: 'Invalid indicator id'
+								}
+							]
+						};
+						assert.strictEqual(JSON.stringify(body), JSON.stringify(expected));
+					});
+				});
 			});
 
 			describe('/indicators/:indicator_id/observations', () => {
-				it.skip('should have tests');
+				describe('Existing indicator', () => {
+					const indicator = 'indicator1';
+					let req;
+					let body;
+					before(async () => {
+						return new Promise(async (resolve, reject) => {
+							const options = {
+								uri: `http://localhost:8000/indicators/${indicator}/observations`,
+								json: true
+							};
+							try {
+								({req, body} = await request(options));
+								resolve();
+							} catch (err) {
+								reject(err);
+							}
+						});
+					});
+
+					it('should return an http 200 status code', () => {
+						assert.strictEqual(req.res.statusCode, 200);
+					});
+
+					it('should return a list of observations for the indicator', () => {
+						assert.strictEqual(body.data.length, 5);
+						for (const observation of body.data) {
+							assert.strictEqual(observation.type, 'observation');
+							assert.strictEqual(observation.relationships.indicator.data.id, indicator);
+						}
+					});
+				});
+
+				describe('Non-existing indicator', () => {
+					const indicator = 'indicator0';
+					let req;
+					let body;
+					before(async () => {
+						return new Promise(async (resolve, reject) => {
+							const options = {
+								uri: `http://localhost:8000/indicators/${indicator}/observations`,
+								json: true
+							};
+							try {
+								({req, body} = await request(options));
+								resolve();
+							} catch (err) {
+								reject(err);
+							}
+						});
+					});
+
+					it('should return an http 404 status code', () => {
+						assert.strictEqual(req.res.statusCode, 404);
+					});
+
+					it('should return an error message', () => {
+						const expected = {
+							errors: [
+								{
+									title: `Indicator '${indicator}' not found`
+								}
+							]
+						};
+						assert.strictEqual(JSON.stringify(body), JSON.stringify(expected));
+					});
+				});
+
+				describe('Invalid indicator id', () => {
+					const indicator = '%25invalid-indicator';
+					let req;
+					let body;
+					before(async () => {
+						return new Promise(async (resolve, reject) => {
+							const options = {
+								uri: `http://localhost:8000/indicators/${indicator}/observations`,
+								json: true
+							};
+							try {
+								({req, body} = await request(options));
+								resolve();
+							} catch (err) {
+								reject(err);
+							}
+						});
+					});
+
+					it('should return an http 400 status code', () => {
+						assert.strictEqual(req.res.statusCode, 400);
+					});
+
+					it('should return an error message', () => {
+						const expected = {
+							errors: [
+								{
+									title: 'Invalid indicator id'
+								}
+							]
+						};
+						assert.strictEqual(JSON.stringify(body), JSON.stringify(expected));
+					});
+				});
+
+				describe('Pagination', () => {
+					let body;
+					before(async () => {
+						return new Promise(async (resolve, reject) => {
+							const options = {
+								uri: 'http://localhost:8000/indicators/indicator1/observations?page[size]=1&page[number]=2',
+								json: true
+							};
+							try {
+								({body} = await request(options));
+								resolve();
+							} catch (err) {
+								reject(err);
+							}
+						});
+					});
+
+					it('should apply pagination logic', () => {
+						assert.strictEqual(body.data.length, 1);
+					});
+
+					it('should contain pagination links', () => {
+						const url = 'http://localhost:8000/indicators/indicator1/observations?page[size]=1&page[number]=1';
+						assert.strictEqual(body.links.first, url);
+						assert.strictEqual(body.links.prev, url);
+					});
+				});
 			});
 
 			describe('/indicators/:indicator_id/timeseries', () => {
-				it.skip('should have tests');
+				describe('Existing indicator', () => {
+					const indicator = 'indicator1';
+					let req;
+					let body;
+					before(async () => {
+						return new Promise(async (resolve, reject) => {
+							const options = {
+								uri: `http://localhost:8000/indicators/${indicator}/timeseries`,
+								json: true
+							};
+							try {
+								({req, body} = await request(options));
+								resolve();
+							} catch (err) {
+								reject(err);
+							}
+						});
+					});
+
+					it('should return an http 200 status code', () => {
+						assert.strictEqual(req.res.statusCode, 200);
+					});
+
+					it('should return a list of timeseries for the indicator', () => {
+						assert.strictEqual(body.data.length, 2);
+						for (const observation of body.data) {
+							assert.strictEqual(observation.type, 'timeseries');
+							assert.strictEqual(observation.relationships.indicator.data.id, indicator);
+						}
+					});
+				});
+
+				describe('Non-existing indicator', () => {
+					const indicator = 'indicator0';
+					let req;
+					let body;
+					before(async () => {
+						return new Promise(async (resolve, reject) => {
+							const options = {
+								uri: `http://localhost:8000/indicators/${indicator}/timeseries`,
+								json: true
+							};
+							try {
+								({req, body} = await request(options));
+								resolve();
+							} catch (err) {
+								reject(err);
+							}
+						});
+					});
+
+					it('should return an http 404 status code', () => {
+						assert.strictEqual(req.res.statusCode, 404);
+					});
+
+					it('should return an error message', () => {
+						const expected = {
+							errors: [
+								{
+									title: `Indicator '${indicator}' not found`
+								}
+							]
+						};
+						assert.strictEqual(JSON.stringify(body), JSON.stringify(expected));
+					});
+				});
+
+				describe('Invalid indicator id', () => {
+					const indicator = '%25invalid-indicator';
+					let req;
+					let body;
+					before(async () => {
+						return new Promise(async (resolve, reject) => {
+							const options = {
+								uri: `http://localhost:8000/indicators/${indicator}/timeseries`,
+								json: true
+							};
+							try {
+								({req, body} = await request(options));
+								resolve();
+							} catch (err) {
+								reject(err);
+							}
+						});
+					});
+
+					it('should return an http 400 status code', () => {
+						assert.strictEqual(req.res.statusCode, 400);
+					});
+
+					it('should return an error message', () => {
+						const expected = {
+							errors: [
+								{
+									title: 'Invalid indicator id'
+								}
+							]
+						};
+						assert.strictEqual(JSON.stringify(body), JSON.stringify(expected));
+					});
+				});
+
+				describe('Pagination', () => {
+					let body;
+					before(async () => {
+						return new Promise(async (resolve, reject) => {
+							const options = {
+								uri: 'http://localhost:8000/indicators/indicator1/timeseries?page[size]=1&page[number]=2',
+								json: true
+							};
+							try {
+								({body} = await request(options));
+								resolve();
+							} catch (err) {
+								reject(err);
+							}
+						});
+					});
+
+					it('should apply pagination logic', () => {
+						assert.strictEqual(body.data.length, 1);
+					});
+
+					it('should contain pagination links', () => {
+						const url = 'http://localhost:8000/indicators/indicator1/timeseries?page[size]=1&page[number]=1';
+						assert.strictEqual(body.links.first, url);
+						assert.strictEqual(body.links.prev, url);
+					});
+				});
 			});
 
 			describe('/indicators/:indicator_id/json-stat', () => {
-				it.skip('should have tests');
+				it.skip('should return a JSONStat object for the indicator');
 			});
 
 			describe('/indicators/:indicator_id/sdmx', () => {
-				it.skip('should have tests');
+				it.skip('should return an SDMX string for the indicator');
 			});
 		});
 	});
