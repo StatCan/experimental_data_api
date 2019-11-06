@@ -402,7 +402,22 @@ describe('Indicators', () => {
 			});
 
 			describe('Filtering', () => {
-				it.skip('should send filtering options to the timeseries `list` function');
+				it('should send filtering options to the timeseries `list` function', async () => {
+					return new Promise(async (resolve, reject) => {
+						const indicator = 'indicator2';
+						const filters = {dimensions: {sex: ['female']}};
+						const noFilter = await indicators.listTimeseries(indicator, 0, 10).catch(reject);
+						const indicatorTimeseries = await indicators.listTimeseries(indicator, 0, 10, undefined, filters).catch(reject);
+						const timeseriesList = await timeseries.list(0, 10, undefined, {indicator: indicator, ...filters}).catch(reject);
+						try {
+							assert.notStrictEqual(JSON.stringify(noFilter), JSON.stringify(indicatorTimeseries));
+							assert.strictEqual(JSON.stringify(indicatorTimeseries), JSON.stringify(timeseriesList));
+							resolve();
+						} catch (e) {
+							reject(e);
+						}
+					});
+				});
 			});
 		});
 
