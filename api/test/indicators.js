@@ -519,7 +519,7 @@ describe('Indicators', () => {
 				assert.strictEqual(body.data.id, indicator);
 			});
 
-			it('should have the indicator` type', () => {
+			it('should have the `indicator` type', () => {
 				assert.strictEqual(body.data.type, 'indicator');
 			});
 
@@ -565,7 +565,7 @@ describe('Indicators', () => {
 
 			it('should have a `dateModified` attribute', () => {
 				assert.strictEqual(typeof body.data.attributes.dateModified, 'string');
-				assert.ok(!isNaN(new Date(body.data.attributes.dateModified)), 'attribute `dateModified` is not a valid date');
+				assert.strictEqual(body.data.attributes.dateModified, new Date(body.data.attributes.dateModified).toISOString());
 			});
 
 			it('should have a relationship link to the indicator\'s observations', () => {

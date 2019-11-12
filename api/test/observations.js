@@ -1,6 +1,9 @@
 /* eslint-env mocha */
 /* eslint "node/no-unpublished-require": 0 */
 const assert = require('assert');
+const util = require('util');
+const request = util.promisify(require('request'));
+const api = require('../index');
 
 describe('Observations', () => {
 	describe('Model', () => {
@@ -605,8 +608,105 @@ describe('Observations', () => {
 	});
 
 	describe('API', () => {
-		describe('Output', () => {
+		let server;
 
+		before(() => {
+			server = api.start();
+		});
+
+		after(() => {
+			server.close();
+		});
+
+		describe('Output', () => {
+			const observation = '41f7ef3e-2dd1-4864-ac77-5daa4c13f04f';
+			const indicator = 'indicator1';
+			const timeseries = 'd3a06c6b-82a7-4efa-8f0f-6cb453deff2c';
+			const uri = `http://localhost:8000/observations/${observation}`;
+			let body;
+			before(async () => {
+				return new Promise(async (resolve, reject) => {
+					const options = {
+						uri,
+						json: true
+					};
+					try {
+						({body} = await request(options));
+						resolve();
+					} catch (err) {
+						reject(err);
+					}
+				});
+			});
+			it('should have an id', () => {
+				assert.strictEqual(body.data.id, observation);
+			});
+
+			it('should have the `observation` type', () => {
+				assert.strictEqual(body.data.type, 'observation');
+			});
+
+			it('should have a link to itself', () => {
+				assert.strictEqual(typeof body.data.links, 'object');
+				assert.strictEqual(body.data.links.self, uri);
+			});
+
+			it('should have a valid ISO date as the `period` attribute', () => {
+				const options = {
+					year: 'numeric',
+					month: '2-digit',
+					day: '2-digit'
+				};
+				assert.notStrictEqual(body.data.attributes.period, undefined);
+				assert.strictEqual(body.data.attributes.period, new Date(body.data.attributes.period).toLocaleDateString(undefined, options));
+			});
+
+			it('should have an object for the `dimensions` attribute', () => {
+				const dimensions = {
+					geographicArea: '24'
+				};
+				assert.strictEqual(typeof body.data.attributes.dimensions, 'object');
+				assert.strictEqual(JSON.stringify(body.data.attributes.dimensions), JSON.stringify(dimensions));
+			});
+
+			it('should have a a `value` attribute', () => {
+				assert.notStrictEqual(body.data.attributes.value, undefined);
+			});
+
+			it('should have a a `status` attribute', () => {
+				assert.notStrictEqual(body.data.attributes.status, undefined);
+			});
+
+			it('should have a valid ISO timestamp as the `dateModified` attribute', () => {
+				assert.notStrictEqual(body.data.attributes.dateModified, undefined);
+				assert.strictEqual(body.data.attributes.dateModified, new Date(body.data.attributes.dateModified).toISOString());
+			});
+
+			it('should have a relationship link to the observations\'s revisions', () => {
+				assert.strictEqual(body.data.relationships.revisions.links.self, `${uri}/revisions`);
+			});
+
+			it('should have a relationship link to the observations\'s notes', () => {
+				assert.strictEqual(body.data.relationships.notes.links.self, `${uri}/notes`);
+			});
+
+			it('should have a relationship link to the observations\'s indicator', () => {
+				assert.strictEqual(body.data.relationships.indicator.links.self, `http://localhost:8000/indicators/${indicator}`);
+			});
+
+			it('should have a relationship reference to the observations\'s indicator', () => {
+				assert.strictEqual(body.data.relationships.indicator.data.id, indicator);
+				assert.strictEqual(body.data.relationships.indicator.data.type, 'indicator');
+			});
+
+			it('should have a relationship link to the observations\'s timeseries', () => {
+				assert.strictEqual(body.data.relationships.timeseries.links.self, `http://localhost:8000/timeseries/${timeseries}`);
+			});
+
+			it('should have a relationship reference to the observations\'s timeseries', () => {
+				assert.strictEqual(body.data.relationships.timeseries.data.id, timeseries);
+				assert.strictEqual(body.data.relationships.timeseries.data.type, 'timeseries');
+			});
 		});
 
 		describe('Routes', () => {
