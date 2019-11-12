@@ -1,6 +1,9 @@
 /* eslint-env mocha */
 /* eslint "node/no-unpublished-require": 0 */
 const assert = require('assert');
+const util = require('util');
+const request = util.promisify(require('request'));
+const api = require('../index');
 
 describe('Timeseries', () => {
 	describe('Model', () => {
@@ -493,8 +496,68 @@ describe('Timeseries', () => {
 	});
 
 	describe('API', () => {
-		describe('Output', () => {
+		let server;
 
+		before(() => {
+			server = api.start();
+		});
+
+		after(() => {
+			server.close();
+		});
+
+		describe('Output', () => {
+			const timeseries = 'd3a06c6b-82a7-4efa-8f0f-6cb453deff2c';
+			const indicator = 'indicator1';
+			const uri = `http://localhost:8000/timeseries/${timeseries}`;
+			let body;
+			before(async () => {
+				return new Promise(async (resolve, reject) => {
+					const options = {
+						uri,
+						json: true
+					};
+					try {
+						({body} = await request(options));
+						resolve();
+					} catch (err) {
+						reject(err);
+					}
+				});
+			});
+			it('should have an id', () => {
+				assert.strictEqual(body.data.id, timeseries);
+			});
+
+			it('should have the `observation` type', () => {
+				assert.strictEqual(body.data.type, 'timeseries');
+			});
+
+			it('should have a link to itself', () => {
+				assert.strictEqual(typeof body.data.links, 'object');
+				assert.strictEqual(body.data.links.self, uri);
+			});
+
+			it('should have an object for the `dimensions` attribute', () => {
+				const dimensions = {
+					geographicArea: '24'
+				};
+				assert.strictEqual(typeof body.data.attributes.dimensions, 'object');
+				assert.strictEqual(JSON.stringify(body.data.attributes.dimensions), JSON.stringify(dimensions));
+			});
+
+			it('should have a relationship link to the timeseries\' observations', () => {
+				assert.strictEqual(body.data.relationships.observations.links.self, `${uri}/observations`);
+			});
+
+			it('should have a relationship link to the timeseries\' indicator', () => {
+				assert.strictEqual(body.data.relationships.indicator.links.self, `http://localhost:8000/indicators/${indicator}`);
+			});
+
+			it('should have a relationship reference to the timeseries\' indicator', () => {
+				assert.strictEqual(body.data.relationships.indicator.data.id, indicator);
+				assert.strictEqual(body.data.relationships.indicator.data.type, 'indicator');
+			});
 		});
 
 		describe('Routes', () => {
