@@ -3,9 +3,9 @@ const pagination = require('jsonapi-pagination');
 const {RequestError} = require('express-api-server');
 const paginationHelper = require('../../helpers/pagination');
 
-async function validateIndicatorId(req, res, next) {
+async function validateTimeseriesId(req, res, next) {
 	try {
-		await timeseries.exists(req.params.indicator_id);
+		await timeseries.exists(req.params.indicator_id, true);
 		next();
 	} catch (err) {
 		switch (err.constructor.name) {
@@ -55,7 +55,7 @@ module.exports = {
 	},
 	'/:indicator_id': (route, urlResolver) => {
 		route
-			.get(validateIndicatorId)
+			.get(validateTimeseriesId)
 			.get(async (req, res, next) => {
 				try {
 					const indicator = await timeseries.get(req.params.indicator_id, urlResolver);
@@ -70,7 +70,7 @@ module.exports = {
 	},
 	'/:indicator_id/observations': (route, urlResolver) => {
 		route
-			.get(validateIndicatorId)
+			.get(validateTimeseriesId)
 			.get(async (req, res, next) => {
 				try {
 					const options = {};
